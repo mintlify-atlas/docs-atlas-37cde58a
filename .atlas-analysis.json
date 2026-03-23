@@ -1,0 +1,102 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Zoomist",
+  "projectDescription": "A TypeScript library for adding zoom, drag, and pinch-to-zoom functionality to any HTML element, with full mobile support.",
+  "theme": "mint",
+  "primaryColor": "#7c7c7c",
+  "lightColor": "#141211",
+  "darkColor": "#c4c3c3",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "installation", "quickstart"]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": ["core-concepts/html-structure", "core-concepts/initialization", "core-concepts/modules"]
+          },
+          {
+            "group": "Guides",
+            "pages": ["guides/slider", "guides/zoomer", "guides/events", "guides/smooth-dragging", "guides/mobile-support"]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Constructor",
+            "pages": ["api/constructor"]
+          },
+          {
+            "group": "Options",
+            "pages": ["api/options"]
+          },
+          {
+            "group": "Methods",
+            "pages": ["api/methods"]
+          },
+          {
+            "group": "Events",
+            "pages": ["api/events"]
+          },
+          {
+            "group": "Types",
+            "pages": ["api/types"]
+          }
+        ]
+      },
+      {
+        "tab": "Changelog",
+        "groups": [
+          {
+            "group": "Releases",
+            "pages": ["changelog"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Zoom any HTML element with mouse wheel, pinch, or programmatic API",
+    "Drag to pan the zoomed element with mouse or touch",
+    "Mobile-first pinch-to-zoom gesture support",
+    "Built-in Slider module for zoom level control",
+    "Built-in Zoomer module with in/out/reset buttons",
+    "Smooth drag animation with configurable damping",
+    "Boundary constraints to keep content in view",
+    "Rich event system for all interaction states",
+    "TypeScript-first with full type definitions",
+    "Zero dependencies, CDN-ready UMD and ES module builds"
+  ],
+  "publicApiSurface": [
+    "new Zoomist(element, options)",
+    "zoomist.zoom(ratio, pointer?)",
+    "zoomist.zoomTo(ratio, pointer?)",
+    "zoomist.move({ x, y })",
+    "zoomist.moveTo({ x, y })",
+    "zoomist.slideTo(value)",
+    "zoomist.reset()",
+    "zoomist.update(options?)",
+    "zoomist.destroy(cleanStyle?)",
+    "zoomist.destroySlider()",
+    "zoomist.destroyZoomer()",
+    "zoomist.destroyModules()",
+    "zoomist.on(event, handler)",
+    "zoomist.getImageData()",
+    "zoomist.getContainerData()",
+    "zoomist.getSliderValue()",
+    "zoomist.isOnBoundX()",
+    "zoomist.isOnBoundY()",
+    "zoomist.isOnBoundTop()",
+    "zoomist.isOnBoundBottom()",
+    "zoomist.isOnBoundLeft()",
+    "zoomist.isOnBoundRight()",
+    "zoomist.isOnMinScale()",
+    "zoomist.isOnMaxScale()"
+  ]
+}
