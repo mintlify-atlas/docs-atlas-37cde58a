@@ -1,0 +1,121 @@
+---
+title: "Constructor"
+description: "Create a new Zoomist instance"
+---
+
+## Signature
+
+```typescript
+new Zoomist(element: HTMLElement | string, options?: ZoomistOptions): Zoomist
+```
+
+## Parameters
+
+<ParamField path="element" type="HTMLElement | string" required>
+  The container element to initialize Zoomist on. Accepts either a CSS selector string (e.g. `'.zoomist-container'`) or a direct `HTMLElement` reference.
+</ParamField>
+
+<ParamField path="options" type="ZoomistOptions">
+  Optional configuration object. All properties are optional — omitted properties use their default values. See [Options](/api/options) for the full list.
+</ParamField>
+
+## Returns
+
+A `Zoomist` instance with all [methods](/api/methods) available.
+
+<Note>
+  The instance is also attached to the container element itself. You can retrieve it via `(element as ZoomistHTMLElement).zoomist`.
+</Note>
+
+## Usage
+
+### TypeScript import
+
+```typescript
+import 'zoomist/css'
+import Zoomist from 'zoomist'
+import type { ZoomistOptions, ZoomistHTMLElement } from 'zoomist'
+```
+
+### Basic usage
+
+<CodeGroup>
+
+```typescript TypeScript
+import 'zoomist/css'
+import Zoomist from 'zoomist'
+
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  bounds: true,
+})
+```
+
+```javascript JavaScript
+import 'zoomist/css'
+import Zoomist from 'zoomist'
+
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  bounds: true,
+})
+```
+
+```html CDN (UMD)
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
+<script src="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.umd.js"></script>
+<script>
+  const zoomist = new Zoomist('.zoomist-container', {
+    maxScale: 4,
+    bounds: true,
+  })
+</script>
+```
+
+</CodeGroup>
+
+### With element reference
+
+```typescript
+import Zoomist from 'zoomist'
+import type { ZoomistHTMLElement } from 'zoomist'
+
+const el = document.querySelector('.zoomist-container') as HTMLElement
+const zoomist = new Zoomist(el, { maxScale: 4 })
+
+// Access the instance via the element property
+const instance = (el as ZoomistHTMLElement).zoomist
+```
+
+### Required HTML structure
+
+Zoomist expects a specific HTML layout. The `.zoomist-wrapper` and `.zoomist-image` elements are required.
+
+```html
+<!-- zoomist-container -->
+<div class="zoomist-container">
+  <!-- zoomist-wrapper is required -->
+  <div class="zoomist-wrapper">
+    <!-- zoomist-image is required -->
+    <div class="zoomist-image">
+      <!-- place any zoomable content here -->
+      <img src="..." />
+    </div>
+  </div>
+</div>
+```
+
+### With slider and zoomer modules
+
+```typescript
+import 'zoomist/css'
+import Zoomist from 'zoomist'
+
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  // enable built-in slider module
+  slider: true,
+  // enable built-in zoomer module
+  zoomer: true,
+})
+```

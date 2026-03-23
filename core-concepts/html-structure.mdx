@@ -1,0 +1,90 @@
+---
+title: "HTML Structure"
+description: "Understanding the required HTML layout for Zoomist"
+---
+
+Zoomist operates on a specific three-layer HTML structure. Each element has a distinct role in the zoom and drag behavior.
+
+## Required markup
+
+```html
+<!-- zoomist-container -->
+<div class="zoomist-container">
+  <!-- zoomist-wrapper is required -->
+  <div class="zoomist-wrapper">
+    <!-- zoomist-image is required -->
+    <div class="zoomist-image">
+      <!-- you can add anything you want to zoom here -->
+      <img src="..." />
+    </div>
+  </div>
+</div>
+```
+
+<Warning>
+  `zoomist-wrapper` and `zoomist-image` are required class names. Zoomist locates these elements by class at initialization. Removing or renaming either class will break the instance.
+</Warning>
+
+## Role of each element
+
+**`zoomist-container`**  
+The outermost wrapper. This is the element you pass to the `Zoomist` constructor. It defines the visible bounds of the zoom area and is the element you size with CSS.
+
+**`zoomist-wrapper`**  
+Acts as the clipping layer. Zoomist attaches pointer and touch event listeners to this element to handle drag, pinch, and wheel interactions.
+
+**`zoomist-image`**  
+The element that is actually scaled and translated. Zoomist applies CSS `transform` (scale and translate) directly to this element. Any content placed inside it — images, SVGs, maps, diagrams — will be zoomed and dragged together.
+
+## Sizing with CSS
+
+Zoomist does not apply any default dimensions. You must give the container and the image element explicit sizes:
+
+```css
+.zoomist-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.zoomist-image {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.zoomist-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+```
+
+<Tip>
+  Use `aspect-ratio` on `.zoomist-image` to keep the zoom area proportional without a fixed pixel height.
+</Tip>
+
+## What goes inside `zoomist-image`
+
+You can place any HTML content inside `zoomist-image`. Common use cases include:
+
+- A single `<img>` element (photos, product images)
+- An inline `<svg>` (diagrams, floor plans, maps)
+- A `<canvas>` element
+- Any arbitrary HTML layout you want users to zoom and pan
+
+```html
+<!-- Image -->
+<div class="zoomist-image">
+  <img src="photo.jpg" alt="A zoomable photo" />
+</div>
+
+<!-- SVG map -->
+<div class="zoomist-image">
+  <svg viewBox="0 0 800 600">...</svg>
+</div>
+
+<!-- Any HTML content -->
+<div class="zoomist-image">
+  <div class="my-custom-layout">...</div>
+</div>
+```

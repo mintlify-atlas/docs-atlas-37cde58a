@@ -1,0 +1,203 @@
+---
+title: "Options"
+description: "All configuration options for the Zoomist constructor"
+---
+
+Pass options as the second argument to the constructor:
+
+```typescript
+const zoomist = new Zoomist('.zoomist-container', {
+  // options here
+})
+```
+
+## Main options
+
+<ParamField path="draggable" type="boolean" default="true">
+  Enable drag-to-pan. When `true`, users can click and drag to pan the image.
+</ParamField>
+
+<ParamField path="wheelable" type="boolean" default="true">
+  Enable mouse wheel zooming. When `true`, scrolling the mouse wheel over the container zooms the image.
+</ParamField>
+
+<ParamField path="pinchable" type="boolean" default="true">
+  Enable pinch-to-zoom on touch devices. When `true`, two-finger pinch gestures zoom the image.
+</ParamField>
+
+<ParamField path="bounds" type="boolean" default="true">
+  Keep the image within the container bounds. When `true`, the image cannot be panned or zoomed outside the container edges.
+</ParamField>
+
+<ParamField path="zoomRatio" type="number" default="0.1">
+  The zoom amount applied per mouse wheel tick. A value of `0.1` means each tick zooms by 10% relative to the current scale.
+</ParamField>
+
+<ParamField path="maxScale" type="number" default="10">
+  The maximum zoom scale. Must be a number greater than `initScale`. For example, `10` means the image can be zoomed to 10× its original size.
+</ParamField>
+
+<ParamField path="minScale" type="number" default="1">
+  The minimum zoom scale. Must be a number less than `maxScale`. The image cannot be zoomed out beyond this value.
+</ParamField>
+
+<ParamField path="initScale" type="number | null" default="null">
+  The initial scale when Zoomist is mounted. When `null`, the initial scale defaults to `minScale`.
+</ParamField>
+
+<ParamField path="dragReleaseOnBounds" type="boolean" default="false">
+  When `true`, touch drag events are released when the image reaches the container bounds, allowing the page to continue scrolling. Useful for mobile layouts where page scroll and image pan coexist.
+</ParamField>
+
+<ParamField path="wheelReleaseOnMinMax" type="boolean" default="false">
+  When `true`, wheel events are released when the image reaches `minScale` or `maxScale`, allowing the page to continue scrolling. Useful when the Zoomist container is inside a scrollable page.
+</ParamField>
+
+<ParamField path="disableDraggingClass" type="string" default="'.zoomist-not-draggable'">
+  A CSS selector string. Elements inside the container that match this selector will not trigger drag-to-pan. Useful for interactive elements (buttons, inputs) inside the zoomable area.
+</ParamField>
+
+<ParamField path="disableWheelingClass" type="string" default="'.zoomist-not-wheelable'">
+  A CSS selector string. Elements inside the container that match this selector will not trigger mouse wheel zoom.
+</ParamField>
+
+<ParamField path="smooth" type="boolean | SmoothOptions" default="false">
+  Enable smooth (inertia) drag animation. When `true`, the default damping value is used. Pass a `SmoothOptions` object to configure the damping manually.
+
+  <Expandable title="SmoothOptions properties">
+    <ParamField path="damping" type="number">
+      Controls the deceleration rate of the inertia animation. Must be a number between `0.1` and `1`. Lower values produce longer, slower glides; higher values stop faster. Clamped to the range `[0.1, 1]` internally.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Slider options
+
+<ParamField path="slider" type="boolean | SliderOptions">
+  Enable the slider zoom control module. Set to `true` to use auto-generated markup with default options, or pass a `SliderOptions` object to provide your own elements.
+
+  <Expandable title="SliderOptions properties">
+    <ParamField path="el" type="string | HTMLElement | null" default="null">
+      A CSS selector string or `HTMLElement` for the slider container. When `null` and `slider: true`, Zoomist auto-generates a `.zoomist-slider` element.
+    </ParamField>
+    <ParamField path="direction" type="'horizontal' | 'vertical'" default="'horizontal'">
+      The orientation of the slider track.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Zoomer options
+
+<ParamField path="zoomer" type="boolean | ZoomerOptions">
+  Enable the zoomer button control module. Set to `true` to use auto-generated markup with default options, or pass a `ZoomerOptions` object to provide your own elements.
+
+  <Expandable title="ZoomerOptions properties">
+    <ParamField path="el" type="string | HTMLElement | null" default="null">
+      A CSS selector string or `HTMLElement` for the zoomer wrapper element. When `null` and `zoomer: true`, Zoomist auto-generates a `.zoomist-zoomer` element.
+    </ParamField>
+    <ParamField path="inEl" type="string | HTMLElement | null" default="null">
+      A CSS selector string or `HTMLElement` for the zoom-in button. When `null` and `zoomer: true`, Zoomist auto-generates a `.zoomist-zoomer-in` element.
+    </ParamField>
+    <ParamField path="outEl" type="string | HTMLElement | null" default="null">
+      A CSS selector string or `HTMLElement` for the zoom-out button. When `null` and `zoomer: true`, Zoomist auto-generates a `.zoomist-zoomer-out` element.
+    </ParamField>
+    <ParamField path="resetEl" type="string | HTMLElement | null" default="null">
+      A CSS selector string or `HTMLElement` for the reset button. When `null` and `zoomer: true`, Zoomist auto-generates a `.zoomist-zoomer-reset` element.
+    </ParamField>
+    <ParamField path="disabledClass" type="string | false | null" default="'zoomist-zoomer-disabled'">
+      A CSS class name applied to the zoom-in button when the image is at `maxScale`, and to the zoom-out button when at `minScale`. Set to `false` or `null` to disable this behaviour.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+## Event handlers
+
+<ParamField path="on" type="object">
+  An object of event handler functions to register at initialization time. Keys are event names from [`EventTypes`](/api/events); values are the corresponding handler functions. See [Events](/api/events) for full signatures and descriptions.
+
+  ```typescript
+  const zoomist = new Zoomist('.zoomist-container', {
+    on: {
+      ready(zoomist) {
+        console.log('Zoomist is ready', zoomist)
+      },
+      zoom(zoomist, scale) {
+        console.log('Current scale:', scale)
+      },
+    },
+  })
+  ```
+</ParamField>
+
+## Complete options example
+
+```typescript
+import Zoomist from 'zoomist'
+import type { ZoomistOptions } from 'zoomist'
+
+const options: ZoomistOptions = {
+  // interaction
+  draggable: true,
+  wheelable: true,
+  pinchable: true,
+  bounds: true,
+
+  // zoom scale
+  zoomRatio: 0.1,
+  maxScale: 10,
+  minScale: 1,
+  initScale: null,
+
+  // scroll/touch passthrough
+  dragReleaseOnBounds: false,
+  wheelReleaseOnMinMax: false,
+
+  // per-element opt-outs
+  disableDraggingClass: '.zoomist-not-draggable',
+  disableWheelingClass: '.zoomist-not-wheelable',
+
+  // smooth drag animation
+  smooth: false,
+  // or with custom damping:
+  // smooth: { damping: 0.6 },
+
+  // slider module
+  slider: {
+    el: null,
+    direction: 'horizontal',
+  },
+
+  // zoomer module
+  zoomer: {
+    el: null,
+    inEl: null,
+    outEl: null,
+    resetEl: null,
+    disabledClass: 'zoomist-zoomer-disabled',
+  },
+
+  // event handlers
+  on: {
+    ready(zoomist) {},
+    reset(zoomist) {},
+    resize(zoomist) {},
+    beforeDestroy(zoomist) {},
+    destroy(zoomist) {},
+    beforeUpdate(zoomist) {},
+    update(zoomist) {},
+    zoom(zoomist, scale) {},
+    wheel(zoomist, scale, event) {},
+    dragStart(zoomist, transform, event) {},
+    drag(zoomist, transform, event) {},
+    dragEnd(zoomist, transform, event) {},
+    pinchStart(zoomist, scale, event) {},
+    pinch(zoomist, scale, event) {},
+    pinchEnd(zoomist, scale, event) {},
+    slideStart(zoomist, value, event) {},
+    slide(zoomist, value, event) {},
+    slideEnd(zoomist, value, event) {},
+  },
+}
+
+const zoomist = new Zoomist('.zoomist-container', options)
+```

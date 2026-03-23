@@ -1,0 +1,374 @@
+---
+title: "Events"
+description: "React to zoom, drag, pinch, and slide interactions with the event system"
+---
+
+Zoomist exposes a comprehensive event system that lets you hook into every user interaction. There are two ways to attach event listeners.
+
+## Listening to events
+
+<Tabs>
+  <Tab title="During initialization">
+    Pass handlers inside the `on` option when creating the Zoomist instance:
+
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      on: {
+        ready(zoomist) {
+          console.log('Zoomist is ready', zoomist)
+        },
+        zoom(zoomist, scale) {
+          console.log('Scale changed to', scale)
+        },
+        drag(zoomist, transform) {
+          console.log('Position:', transform.x, transform.y)
+        }
+      }
+    })
+    ```
+  </Tab>
+  <Tab title="After initialization">
+    Call `zoomist.on(event, handler)` at any time after the instance is created:
+
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      maxScale: 4
+    })
+
+    zoomist.on('zoom', (zoomist, scale) => {
+      console.log('Scale changed to', scale)
+    })
+
+    zoomist.on('drag', (zoomist, transform) => {
+      console.log('Position:', transform.x, transform.y)
+    })
+    ```
+  </Tab>
+</Tabs>
+
+### Multiple events, one handler
+
+Pass a space-separated string of event names to attach the same handler to multiple events at once:
+
+```js
+zoomist.on('drag dragEnd', (zoomist, transform) => {
+  console.log('Drag activity detected', transform)
+})
+
+zoomist.on('pinchStart pinch pinchEnd', (zoomist, scale) => {
+  console.log('Pinch scale:', scale)
+})
+```
+
+## Event reference
+
+### Lifecycle events
+
+<AccordionGroup>
+  <Accordion title="ready(zoomist)">
+    Fired once when the Zoomist instance has finished initializing.
+
+    ```js
+    zoomist.on('ready', (zoomist) => {
+      console.log('Instance ready')
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="reset(zoomist)">
+    Fired when the `reset()` method is called and the image returns to its initial scale and position.
+
+    ```js
+    zoomist.on('reset', (zoomist) => {
+      console.log('Image reset to initial state')
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="resize(zoomist)">
+    Fired when the container changes size and Zoomist recalculates image dimensions.
+
+    ```js
+    zoomist.on('resize', (zoomist) => {
+      console.log('Container resized')
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="beforeUpdate(zoomist)">
+    Fired before the `update()` method re-initializes the instance.
+
+    ```js
+    zoomist.on('beforeUpdate', (zoomist) => {
+      console.log('About to update')
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="update(zoomist)">
+    Fired after the `update()` method has completed re-initialization.
+
+    ```js
+    zoomist.on('update', (zoomist) => {
+      console.log('Update complete')
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="beforeDestroy(zoomist)">
+    Fired before the `destroy()` method removes the instance.
+
+    ```js
+    zoomist.on('beforeDestroy', (zoomist) => {
+      console.log('About to destroy')
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="destroy(zoomist)">
+    Fired after the `destroy()` method has completed and the instance is torn down.
+
+    ```js
+    zoomist.on('destroy', (zoomist) => {
+      console.log('Instance destroyed')
+    })
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Zoom events
+
+<AccordionGroup>
+  <Accordion title="zoom(zoomist, scale)">
+    Fired whenever the scale changes, regardless of the source (wheel, pinch, `zoom()` method, or slider).
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `scale` | `number` | The new scale value |
+
+    ```js
+    zoomist.on('zoom', (zoomist, scale) => {
+      console.log('Current scale:', scale)
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="wheel(zoomist, scale, event)">
+    Fired when the user scrolls the mouse wheel over the container.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `scale` | `number` | The new scale value |
+    | `event` | `WheelEvent` | The native wheel event |
+
+    ```js
+    zoomist.on('wheel', (zoomist, scale, event) => {
+      event.preventDefault()
+      console.log('Wheel zoom to:', scale)
+    })
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Drag events
+
+<AccordionGroup>
+  <Accordion title="dragStart(zoomist, transform, event)">
+    Fired when the user presses the mouse button (or touches) on the image to begin dragging.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `transform` | `{ x: number, y: number }` | Current translation in pixels |
+    | `event` | `Event` | The native pointer event |
+
+    ```js
+    zoomist.on('dragStart', (zoomist, transform, event) => {
+      console.log('Drag started at', transform)
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="drag(zoomist, transform, event)">
+    Fired continuously while the user drags the image.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `transform` | `{ x: number, y: number }` | Current translation in pixels |
+    | `event` | `Event` | The native pointer event |
+
+    ```js
+    zoomist.on('drag', (zoomist, transform, event) => {
+      console.log('Dragging — x:', transform.x, 'y:', transform.y)
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="dragEnd(zoomist, transform, event)">
+    Fired when the user releases the mouse button (or lifts their finger) after dragging.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `transform` | `{ x: number, y: number }` | Final translation in pixels |
+    | `event` | `Event` | The native pointer event |
+
+    ```js
+    zoomist.on('dragEnd', (zoomist, transform, event) => {
+      console.log('Drag ended at', transform)
+    })
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Pinch events
+
+<AccordionGroup>
+  <Accordion title="pinchStart(zoomist, scale, event)">
+    Fired when a two-finger pinch gesture begins on a touch device.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `scale` | `number` | The scale at the start of the pinch |
+    | `event` | `Event` | The native touch event |
+
+    ```js
+    zoomist.on('pinchStart', (zoomist, scale, event) => {
+      console.log('Pinch started at scale', scale)
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="pinch(zoomist, scale, event)">
+    Fired continuously as the pinch gesture updates.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `scale` | `number` | The current scale during the pinch |
+    | `event` | `Event` | The native touch event |
+
+    ```js
+    zoomist.on('pinch', (zoomist, scale, event) => {
+      console.log('Pinching — scale:', scale)
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="pinchEnd(zoomist, scale, event)">
+    Fired when the pinch gesture ends.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `scale` | `number` | The final scale after the pinch |
+    | `event` | `Event` | The native touch event |
+
+    ```js
+    zoomist.on('pinchEnd', (zoomist, scale, event) => {
+      console.log('Pinch ended at scale', scale)
+    })
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Slide events
+
+These events fire when the user interacts with the [Slider module](/guides/slider).
+
+<AccordionGroup>
+  <Accordion title="slideStart(zoomist, value, event)">
+    Fired when the user begins dragging the slider button.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `value` | `number` | The slider position (0–100) at drag start |
+    | `event` | `Event` | The native pointer event |
+
+    ```js
+    zoomist.on('slideStart', (zoomist, value, event) => {
+      console.log('Slide started at', value)
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="slide(zoomist, value, event)">
+    Fired continuously while the user drags the slider.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `value` | `number` | The current slider position (0–100) |
+    | `event` | `Event` | The native pointer event |
+
+    ```js
+    zoomist.on('slide', (zoomist, value, event) => {
+      document.querySelector('.zoom-display').textContent = `${Math.round(value)}%`
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="slideEnd(zoomist, value, event)">
+    Fired when the user releases the slider button.
+
+    | Parameter | Type | Description |
+    | --------- | ---- | ----------- |
+    | `zoomist` | `Zoomist` | The Zoomist instance |
+    | `value` | `number` | The final slider position (0–100) |
+    | `event` | `Event` | The native pointer event |
+
+    ```js
+    zoomist.on('slideEnd', (zoomist, value, event) => {
+      console.log('Slider settled at', value)
+    })
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Practical examples
+
+### Display current scale
+
+```js
+const scaleDisplay = document.querySelector('.scale-display')
+
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  on: {
+    ready(zoomist) {
+      scaleDisplay.textContent = zoomist.transform.scale.toFixed(2)
+    },
+    zoom(zoomist, scale) {
+      scaleDisplay.textContent = scale.toFixed(2)
+    }
+  }
+})
+```
+
+### Track drag position and update an overlay
+
+```js
+const positionLabel = document.querySelector('.position-label')
+
+zoomist.on('drag', (zoomist, transform) => {
+  positionLabel.textContent = `x: ${transform.x.toFixed(0)}, y: ${transform.y.toFixed(0)}`
+})
+
+zoomist.on('dragEnd', (zoomist, transform) => {
+  positionLabel.textContent = 'Released'
+})
+```
+
+### Clean up before destroy
+
+```js
+zoomist.on('beforeDestroy', (zoomist) => {
+  // Save state or remove external listeners before teardown
+  localStorage.setItem('lastScale', String(zoomist.transform.scale))
+})
+```

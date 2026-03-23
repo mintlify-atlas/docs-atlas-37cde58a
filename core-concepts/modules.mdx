@@ -1,0 +1,238 @@
+---
+title: "Modules"
+description: "Using the built-in Slider and Zoomer modules"
+---
+
+Zoomist includes two optional built-in modules: **Slider** and **Zoomer**. Modules add UI controls for zooming and are configured alongside the main options when calling `new Zoomist()`.
+
+Each module can be enabled in two ways:
+
+- Pass `true` to let Zoomist auto-generate and append the HTML for you.
+- Pass an options object to target your own existing HTML elements.
+
+## Slider module
+
+The Slider module renders a draggable track that maps the current zoom level to a `0–100` value. Dragging the button changes the image scale between `minScale` and `maxScale`.
+
+### Options
+
+<ParamField path="slider.el" type="string | HTMLElement | null" default="null">
+  CSS selector or element reference for the slider container. When `slider: true` is used, Zoomist targets `.zoomist-slider` and creates it automatically.
+</ParamField>
+
+<ParamField path="slider.direction" type="'horizontal' | 'vertical'" default="'horizontal'">
+  Orientation of the slider track.
+</ParamField>
+
+### Usage
+
+<Tabs>
+  <Tab title="Auto-generated">
+    Pass `slider: true` and Zoomist creates and appends the slider element inside your container. No extra HTML is needed.
+
+    ```javascript
+    const zoomist = new Zoomist('.zoomist-container', {
+      slider: true,
+    })
+    ```
+
+    Zoomist appends the following structure to `.zoomist-container`:
+
+    ```html
+    <div class="zoomist-slider zoomist-slider-horizontal">
+      <div class="zoomist-slider-track">
+        <span class="zoomist-slider-bar"></span>
+        <span
+          class="zoomist-slider-button"
+          role="slider"
+          aria-orientation="horizontal"
+        ></span>
+      </div>
+    </div>
+    ```
+  </Tab>
+  <Tab title="Custom element">
+    Provide an `el` selector or element when you want full control over placement and markup.
+
+    ```html
+    <!-- Your custom slider container -->
+    <div id="my-slider"></div>
+
+    <div class="zoomist-container">
+      <div class="zoomist-wrapper">
+        <div class="zoomist-image">
+          <img src="photo.jpg" alt="Zoomable photo" />
+        </div>
+      </div>
+    </div>
+    ```
+
+    ```javascript
+    const zoomist = new Zoomist('.zoomist-container', {
+      slider: {
+        el: '#my-slider',
+        direction: 'vertical',
+      },
+    })
+    ```
+
+    <Note>
+      When targeting a custom element, Zoomist appends the track and button inside the element you specify but does **not** move or recreate the container itself.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Zoomer module
+
+The Zoomer module renders zoom-in, zoom-out, and reset buttons. Each button dispatches the corresponding Zoomist method (`zoom(+ratio)`, `zoom(-ratio)`, `reset()`) on click. Buttons are automatically marked with `aria-disabled` and a disabled CSS class when the image reaches its minimum or maximum scale.
+
+### Options
+
+<ParamField path="zoomer.el" type="string | HTMLElement | null" default="null">
+  CSS selector or element reference for the zoomer wrapper. When `zoomer: true` is used, Zoomist targets `.zoomist-zoomer` and creates it automatically.
+</ParamField>
+
+<ParamField path="zoomer.inEl" type="string | HTMLElement | null" default="null">
+  CSS selector or element for the zoom-in button. Automatically created as `.zoomist-zoomer-in` when `zoomer: true`.
+</ParamField>
+
+<ParamField path="zoomer.outEl" type="string | HTMLElement | null" default="null">
+  CSS selector or element for the zoom-out button. Automatically created as `.zoomist-zoomer-out` when `zoomer: true`.
+</ParamField>
+
+<ParamField path="zoomer.resetEl" type="string | HTMLElement | null" default="null">
+  CSS selector or element for the reset button. Automatically created as `.zoomist-zoomer-reset` when `zoomer: true`.
+</ParamField>
+
+<ParamField path="zoomer.disabledClass" type="string | false | null" default="'zoomist-zoomer-disabled'">
+  Class applied to the zoom-in button at `maxScale` and to the zoom-out button at `minScale`. Set to `false` or `null` to disable this behavior.
+</ParamField>
+
+### Usage
+
+<Tabs>
+  <Tab title="Auto-generated">
+    Pass `zoomer: true` and Zoomist creates and appends the button group inside your container.
+
+    ```javascript
+    const zoomist = new Zoomist('.zoomist-container', {
+      zoomer: true,
+    })
+    ```
+
+    Zoomist appends the following structure to `.zoomist-container`:
+
+    ```html
+    <div class="zoomist-zoomer">
+      <button class="zoomist-zoomer-in zoomist-zoomer-button" aria-label="Zoom in">…</button>
+      <button class="zoomist-zoomer-out zoomist-zoomer-button" aria-label="Zoom out">…</button>
+      <button class="zoomist-zoomer-reset zoomist-zoomer-button" aria-label="Reset">…</button>
+    </div>
+    ```
+
+    Each button contains an inline SVG icon.
+  </Tab>
+  <Tab title="Custom elements">
+    Target your own buttons by passing selectors or element references.
+
+    ```html
+    <button id="btn-in">+</button>
+    <button id="btn-out">-</button>
+    <button id="btn-reset">Reset</button>
+
+    <div class="zoomist-container">
+      <div class="zoomist-wrapper">
+        <div class="zoomist-image">
+          <img src="photo.jpg" alt="Zoomable photo" />
+        </div>
+      </div>
+    </div>
+    ```
+
+    ```javascript
+    const zoomist = new Zoomist('.zoomist-container', {
+      zoomer: {
+        inEl: '#btn-in',
+        outEl: '#btn-out',
+        resetEl: '#btn-reset',
+        disabledClass: 'btn-disabled',
+      },
+    })
+    ```
+
+    <Tip>
+      You can mix auto-generated and custom elements. For example, provide a custom `el` wrapper but omit `inEl`, `outEl`, and `resetEl` to let Zoomist generate the buttons inside your wrapper.
+    </Tip>
+  </Tab>
+</Tabs>
+
+## Complete example
+
+The following example enables both modules with auto-generated HTML:
+
+```html
+<div class="zoomist-container">
+  <div class="zoomist-wrapper">
+    <div class="zoomist-image">
+      <img src="photo.jpg" alt="Zoomable photo" />
+    </div>
+  </div>
+</div>
+```
+
+```javascript
+import 'zoomist/css'
+import Zoomist from 'zoomist'
+
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  slider: true,
+  zoomer: true,
+})
+```
+
+Zoomist appends the slider and zoomer elements automatically, resulting in:
+
+```html
+<div class="zoomist-container">
+  <div class="zoomist-wrapper">
+    <div class="zoomist-image">
+      <img src="photo.jpg" alt="Zoomable photo" />
+    </div>
+  </div>
+  <!-- appended by Zoomist -->
+  <div class="zoomist-slider zoomist-slider-horizontal">…</div>
+  <div class="zoomist-zoomer">…</div>
+</div>
+```
+
+## Destroying modules
+
+You can tear down individual modules or both at once without destroying the entire Zoomist instance.
+
+<CodeGroup>
+
+```javascript destroy-slider.js
+// Remove the slider and its event listeners
+zoomist.destroySlider()
+```
+
+```javascript destroy-zoomer.js
+// Remove the zoomer buttons and their event listeners
+zoomist.destroyZoomer()
+```
+
+```javascript destroy-all-modules.js
+// Remove both the slider and the zoomer in one call
+zoomist.destroyModules()
+```
+
+</CodeGroup>
+
+<Note>
+  When a module was auto-generated (`slider: true` / `zoomer: true`), destroying it also removes the generated DOM elements from the container. When you supplied your own elements, only the event listeners are removed — the elements remain in the DOM.
+</Note>
+
+<Warning>
+  After calling `destroySlider()` or `destroyZoomer()`, the corresponding module is marked as `mounted: false`. You must call `update()` or reinitialize Zoomist to re-enable the module.
+</Warning>

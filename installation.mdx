@@ -1,0 +1,85 @@
+---
+title: "Installation"
+description: "Install Zoomist via npm, yarn, pnpm, or include via CDN"
+---
+
+Zoomist is available as an npm package (v2.2.0) and via CDN. Choose the approach that fits your project.
+
+<Tabs>
+  <Tab title="npm / yarn / pnpm">
+    Install the package from the npm registry:
+
+    <CodeGroup>
+
+    ```bash npm
+    npm install zoomist
+    ```
+
+    ```bash yarn
+    yarn add zoomist
+    ```
+
+    ```bash pnpm
+    pnpm add zoomist
+    ```
+
+    </CodeGroup>
+
+    Then import the CSS and the library in your JavaScript or TypeScript file:
+
+    ```typescript
+    // Import Zoomist styles
+    import 'zoomist/css'
+    // Import Zoomist
+    import Zoomist from 'zoomist'
+
+    // Initialize
+    const zoomist = new Zoomist('.zoomist-container')
+    ```
+
+    <Note>
+      The CSS import (`zoomist/css`) is required for built-in modules like the slider and zoomer to display correctly.
+    </Note>
+  </Tab>
+
+  <Tab title="CDN">
+    Include Zoomist directly from jsDelivr — no build step required.
+
+    <Tabs>
+      <Tab title="UMD">
+        The UMD build exposes `Zoomist` as a global variable on `window`.
+
+        ```html
+        <!-- Styles -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
+
+        <!-- Script -->
+        <script src="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.umd.js"></script>
+        <script>
+          const zoomist = new Zoomist('.zoomist-container')
+        </script>
+        ```
+      </Tab>
+
+      <Tab title="ES module">
+        Use the ES module build with a `<script type="module">` tag.
+
+        ```html
+        <!-- Styles -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
+
+        <!-- Script -->
+        <script type="module">
+          import Zoomist from 'https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.js'
+
+          const zoomist = new Zoomist('.zoomist-container')
+        </script>
+        ```
+      </Tab>
+    </Tabs>
+
+    <Tip>
+      The CDN approach is ideal for quick prototypes or when you want to avoid a build tool setup.
+    </Tip>
+  </Tab>
+</Tabs>

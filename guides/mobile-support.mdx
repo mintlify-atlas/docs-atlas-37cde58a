@@ -1,0 +1,134 @@
+---
+title: "Mobile support"
+description: "Pinch-to-zoom and touch gestures on mobile devices"
+---
+
+Zoomist works out of the box on mobile devices — no extra configuration or plugins are required. Touch events (`touchstart`, `touchmove`, `touchend`) are handled internally alongside mouse events, so the same Zoomist instance drives both desktop and mobile interactions.
+
+## Touch features enabled by default
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `pinchable` | `true` | Enables two-finger pinch-to-zoom on touch devices |
+| `draggable` | `true` | Enables touch-drag to pan the image |
+| `dragReleaseOnBounds` | `false` | Releases touch events at image bounds to allow page scrolling |
+| `wheelReleaseOnMinMax` | `false` | Releases wheel events at min/max scale to allow page scrolling |
+
+## Pinch-to-zoom
+
+The `pinchable` option controls whether two-finger pinch gestures change the zoom level. It is enabled by default.
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  pinchable: true // default
+})
+```
+
+To disable pinch-to-zoom while keeping drag support:
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  pinchable: false,
+  draggable: true
+})
+```
+
+## Touch-drag to pan
+
+The `draggable` option enables single-finger touch drag to pan around the zoomed image. It applies to both mouse and touch events and is enabled by default.
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  draggable: true // default
+})
+```
+
+## Releasing touch events for page scrolling
+
+When Zoomist is inside a scrollable page, touch events that fall inside the container are consumed by Zoomist and won't scroll the page. Two options let you release control back to the browser at the appropriate moment.
+
+### `dragReleaseOnBounds`
+
+When `true`, Zoomist releases touch events when the image has reached its boundary. This lets the user continue scrolling the page by dragging past the edge of the image.
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  dragReleaseOnBounds: true
+})
+```
+
+<Tip>
+  Use `dragReleaseOnBounds: true` whenever your Zoomist container is embedded inside a vertically or horizontally scrollable page. Without it, users may feel "stuck" inside the zoomed image.
+</Tip>
+
+### `wheelReleaseOnMinMax`
+
+When `true`, Zoomist releases wheel events when the image is already at its minimum or maximum scale. This allows normal page scrolling when the user has zoomed all the way in or out.
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  wheelReleaseOnMinMax: true
+})
+```
+
+## Preventing drag on child elements
+
+If your zoomable area contains interactive elements (such as buttons, links, or form controls), you may want those elements to receive clicks without triggering a drag. Add the class specified by `disableDraggingClass` to any child element that should not initiate a drag.
+
+The default class name is `zoomist-not-draggable`:
+
+```html
+<div class="zoomist-image">
+  <img src="product.jpg" alt="Product" />
+  <!-- This button will not trigger a drag -->
+  <button class="zoomist-not-draggable">Add to cart</button>
+</div>
+```
+
+You can change the class name via the `disableDraggingClass` option:
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  disableDraggingClass: 'no-drag'
+})
+```
+
+```html
+<button class="no-drag">Add to cart</button>
+```
+
+## Recommended mobile configuration
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  pinchable: true,
+  draggable: true,
+  bounds: true,
+  minScale: 1,
+  maxScale: 4,
+  dragReleaseOnBounds: true,
+  wheelReleaseOnMinMax: true,
+  smooth: true
+})
+```
+
+## Mobile UX tips
+
+<CardGroup cols={2}>
+  <Card title="Set a defined container size" icon="border-outer">
+    Ensure `.zoomist-container` has an explicit width and height (or an `aspect-ratio`). On mobile, percentage-based sizes can collapse to zero if the parent has no intrinsic height.
+  </Card>
+  <Card title="Enable dragReleaseOnBounds" icon="hand-pointer">
+    Always set `dragReleaseOnBounds: true` if the container is inside a scrollable page. Users expect to be able to scroll past the image.
+  </Card>
+  <Card title="Keep minScale at 1" icon="magnifying-glass">
+    A `minScale` of `1` prevents the image from becoming smaller than its container, which would leave empty gaps and feel broken on mobile.
+  </Card>
+  <Card title="Use smooth dragging" icon="wand-magic-sparkles">
+    Enable `smooth: true` for a native-app-like feel. The momentum animation aligns with the physics users expect from iOS and Android.
+  </Card>
+</CardGroup>
+
+<Note>
+  Zoomist uses `touchstart`, `touchmove`, and `touchend` events internally. If you attach your own touch listeners to the same container, take care to avoid conflicts — particularly around `preventDefault()` calls.
+</Note>

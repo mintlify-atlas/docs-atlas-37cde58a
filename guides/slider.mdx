@@ -1,0 +1,192 @@
+---
+title: "Slider module"
+description: "Add a visual slider to control zoom level"
+---
+
+The Slider module adds a draggable slider UI element that maps directly to the zoom level. As the user drags the slider, the image zooms in or out proportionally between `minScale` and `maxScale`.
+
+## Quick start
+
+Pass `slider: true` to enable the slider with its default options. Zoomist will auto-generate the required HTML and insert it into the container.
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  slider: true
+})
+```
+
+<Note>
+  Importing `zoomist/css` (or the CDN stylesheet) is required for the auto-generated slider to be styled correctly.
+</Note>
+
+## Auto-generated HTML structure
+
+When `slider: true` is set, Zoomist appends the following markup inside `.zoomist-container`:
+
+```html
+<div class="zoomist-slider">
+  <div class="zoomist-slider-track">
+    <div class="zoomist-slider-button"></div>
+  </div>
+</div>
+```
+
+You can target these classes in your own CSS to restyle the slider without replacing the element.
+
+## Configuration options
+
+Pass an object instead of `true` for full control:
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  slider: {
+    el: null,          // CSS selector or HTMLElement — null means auto-generate
+    direction: 'horizontal'  // 'horizontal' (default) or 'vertical'
+  }
+})
+```
+
+### Direction
+
+<Tabs>
+  <Tab title="Horizontal (default)">
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      slider: {
+        direction: 'horizontal'
+      }
+    })
+    ```
+  </Tab>
+  <Tab title="Vertical">
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      slider: {
+        direction: 'vertical'
+      }
+    })
+    ```
+  </Tab>
+</Tabs>
+
+## Using a custom slider element
+
+If you want to use your own markup for the slider, provide a CSS selector or an `HTMLElement` reference via the `el` option. Zoomist will bind its slider logic to that element instead of auto-generating one.
+
+<Steps>
+  <Step title="Add your slider HTML">
+    ```html
+    <div class="zoomist-container">
+      <div class="zoomist-wrapper">
+        <div class="zoomist-image">
+          <img src="photo.jpg" alt="Zoomable photo" />
+        </div>
+      </div>
+      <!-- your custom slider -->
+      <div class="my-slider"></div>
+    </div>
+    ```
+  </Step>
+  <Step title="Pass the selector to Zoomist">
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      slider: {
+        el: '.my-slider',
+        direction: 'horizontal'
+      }
+    })
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  When using a custom element, Zoomist still injects the inner `zoomist-slider-track` and `zoomist-slider-button` elements inside your element. You only supply the outer wrapper.
+</Tip>
+
+## CSS customization
+
+Override the default slider styles by targeting the generated classes:
+
+```css
+/* Outer slider wrapper */
+.zoomist-slider {
+  width: 100%;
+  padding: 8px 0;
+}
+
+/* Track (the bar) */
+.zoomist-slider-track {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  position: relative;
+}
+
+/* Draggable thumb */
+.zoomist-slider-button {
+  width: 16px;
+  height: 16px;
+  background: #333;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+```
+
+## Programmatic control
+
+### `slideTo(value)`
+
+Moves the slider — and zooms the image — to a specific position. The value is a number between `0` (minimum scale) and `100` (maximum scale).
+
+```js
+// Zoom to 50% of the way between minScale and maxScale
+zoomist.slideTo(50)
+
+// Jump to maximum zoom
+zoomist.slideTo(100)
+
+// Jump to minimum zoom
+zoomist.slideTo(0)
+```
+
+<Info>
+  `slideTo` maps linearly: `scale = ((maxScale - minScale) * value / 100) + minScale`. With the defaults `minScale: 1` and `maxScale: 10`, `slideTo(50)` sets the scale to `5.5`.
+</Info>
+
+### `getSliderValue()`
+
+Returns the current slider position as a number between `0` and `100`, or `null` if the slider module is not enabled.
+
+```js
+const value = zoomist.getSliderValue()
+console.log(value) // e.g. 42.5
+```
+
+## Full example
+
+```html
+<div class="zoomist-container">
+  <div class="zoomist-wrapper">
+    <div class="zoomist-image">
+      <img src="photo.jpg" alt="Zoomable photo" />
+    </div>
+  </div>
+</div>
+```
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  slider: {
+    direction: 'horizontal'
+  },
+  on: {
+    slide(zoomist, value) {
+      console.log('Slider value:', value)
+    }
+  }
+})
+```

@@ -1,0 +1,448 @@
+---
+title: "Events"
+description: "All events emitted by a Zoomist instance"
+---
+
+Zoomist emits events throughout the lifecycle of the instance and during user interactions. You can listen for events in two ways:
+
+## Subscribing to events
+
+### Via the `on` option at initialization
+
+```typescript
+const zoomist = new Zoomist('.zoomist-container', {
+  on: {
+    ready(zoomist) {
+      console.log('Zoomist is ready')
+    },
+    zoom(zoomist, scale) {
+      console.log('Current scale:', scale)
+    },
+    drag(zoomist, transform, event) {
+      console.log('Dragging to:', transform)
+    },
+  },
+})
+```
+
+### Via the `.on()` method after initialization
+
+```typescript
+const zoomist = new Zoomist('.zoomist-container')
+
+zoomist.on('zoom', (zoomist, scale) => {
+  console.log('Current scale:', scale)
+})
+
+zoomist.on('drag', (zoomist, transform, event) => {
+  console.log('Dragging to:', transform)
+})
+```
+
+### Subscribing to multiple events at once
+
+Pass a space-separated string of event names to `.on()` to register the same handler for multiple events:
+
+```typescript
+zoomist.on('drag dragEnd', (zoomist, transform, event) => {
+  console.log('drag or dragEnd fired')
+})
+
+zoomist.on('pinchStart pinch pinchEnd', (zoomist, scale, event) => {
+  console.log('pinch event fired, scale:', scale)
+})
+```
+
+<Note>
+  Multiple event names passed as a space-separated string must all share the same handler signature. Combine only events with compatible signatures.
+</Note>
+
+---
+
+## Lifecycle events
+
+### `ready`
+
+Fired when the Zoomist instance finishes initializing and is ready for interaction.
+
+```typescript
+ready: (zoomist: Zoomist) => void
+```
+
+```typescript
+zoomist.on('ready', (zoomist) => {
+  console.log('Zoomist is ready', zoomist)
+})
+```
+
+---
+
+### `reset`
+
+Fired when `reset()` is called.
+
+```typescript
+reset: (zoomist: Zoomist) => void
+```
+
+```typescript
+zoomist.on('reset', (zoomist) => {
+  console.log('Instance has been reset')
+})
+```
+
+---
+
+### `resize`
+
+Fired when the container or image changes size (e.g. the browser window is resized).
+
+```typescript
+resize: (zoomist: Zoomist) => void
+```
+
+```typescript
+zoomist.on('resize', (zoomist) => {
+  console.log('Container resized')
+})
+```
+
+---
+
+### `beforeDestroy`
+
+Fired immediately before `destroy()` begins cleanup.
+
+```typescript
+beforeDestroy: (zoomist: Zoomist) => void
+```
+
+```typescript
+zoomist.on('beforeDestroy', (zoomist) => {
+  console.log('About to destroy')
+})
+```
+
+---
+
+### `destroy`
+
+Fired after `destroy()` has completed cleanup.
+
+```typescript
+destroy: (zoomist: Zoomist) => void
+```
+
+```typescript
+zoomist.on('destroy', (zoomist) => {
+  console.log('Instance destroyed')
+})
+```
+
+---
+
+### `beforeUpdate`
+
+Fired immediately before `update()` begins re-initialization.
+
+```typescript
+beforeUpdate: (zoomist: Zoomist) => void
+```
+
+```typescript
+zoomist.on('beforeUpdate', (zoomist) => {
+  console.log('About to update')
+})
+```
+
+---
+
+### `update`
+
+Fired after `update()` has completed re-initialization.
+
+```typescript
+update: (zoomist: Zoomist) => void
+```
+
+```typescript
+zoomist.on('update', (zoomist) => {
+  console.log('Instance updated')
+})
+```
+
+---
+
+## Zoom events
+
+### `zoom`
+
+Fired whenever the scale changes (via any zoom mechanism: wheel, pinch, `zoom()`, `zoomTo()`, or `slideTo()`).
+
+```typescript
+zoom: (zoomist: Zoomist, scale: number) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `scale` | `number` | The new scale value after the change |
+
+```typescript
+zoomist.on('zoom', (zoomist, scale) => {
+  console.log('Scale is now:', scale)
+})
+```
+
+---
+
+### `wheel`
+
+Fired on each mouse wheel event that triggers a zoom.
+
+```typescript
+wheel: (zoomist: Zoomist, scale: number, event: WheelEvent) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `scale` | `number` | The new scale value after the wheel event |
+| `event` | `WheelEvent` | The native `WheelEvent` |
+
+```typescript
+zoomist.on('wheel', (zoomist, scale, event) => {
+  console.log('Wheel event, new scale:', scale)
+})
+```
+
+---
+
+## Drag events
+
+### `dragStart`
+
+Fired when the user begins a drag gesture (mousedown or touchstart on the wrapper).
+
+```typescript
+dragStart: (zoomist: Zoomist, transform: { x: number; y: number }, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `transform` | `{ x: number; y: number }` | Current translation at the start of the drag (`x` = translateX, `y` = translateY) |
+| `event` | `Event` | The native pointer or touch event |
+
+```typescript
+zoomist.on('dragStart', (zoomist, transform, event) => {
+  console.log('Drag started at:', transform)
+})
+```
+
+---
+
+### `drag`
+
+Fired continuously while the user is dragging.
+
+```typescript
+drag: (zoomist: Zoomist, transform: { x: number; y: number }, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `transform` | `{ x: number; y: number }` | Current translation during the drag |
+| `event` | `Event` | The native pointer or touch event |
+
+```typescript
+zoomist.on('drag', (zoomist, transform, event) => {
+  console.log('Dragging, position:', transform)
+})
+```
+
+---
+
+### `dragEnd`
+
+Fired when the user releases the drag gesture (mouseup or touchend).
+
+```typescript
+dragEnd: (zoomist: Zoomist, transform: { x: number; y: number }, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `transform` | `{ x: number; y: number }` | Final translation at the end of the drag |
+| `event` | `Event` | The native pointer or touch event |
+
+```typescript
+zoomist.on('dragEnd', (zoomist, transform, event) => {
+  console.log('Drag ended at:', transform)
+})
+```
+
+---
+
+## Pinch events
+
+### `pinchStart`
+
+Fired when a pinch gesture begins on a touch device.
+
+```typescript
+pinchStart: (zoomist: Zoomist, scale: number, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `scale` | `number` | The scale at the start of the pinch |
+| `event` | `Event` | The native touch event |
+
+```typescript
+zoomist.on('pinchStart', (zoomist, scale, event) => {
+  console.log('Pinch started, initial scale:', scale)
+})
+```
+
+---
+
+### `pinch`
+
+Fired continuously while the user is pinching.
+
+```typescript
+pinch: (zoomist: Zoomist, scale: number, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `scale` | `number` | The current scale during the pinch |
+| `event` | `Event` | The native touch event |
+
+```typescript
+zoomist.on('pinch', (zoomist, scale, event) => {
+  console.log('Pinching, scale:', scale)
+})
+```
+
+---
+
+### `pinchEnd`
+
+Fired when the pinch gesture ends.
+
+```typescript
+pinchEnd: (zoomist: Zoomist, scale: number, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `scale` | `number` | The final scale at the end of the pinch |
+| `event` | `Event` | The native touch event |
+
+```typescript
+zoomist.on('pinchEnd', (zoomist, scale, event) => {
+  console.log('Pinch ended, final scale:', scale)
+})
+```
+
+---
+
+## Slide events
+
+Slide events fire only when the [slider module](/api/options#slider-options) is active.
+
+### `slideStart`
+
+Fired when the user begins interacting with the slider (mousedown or touchstart on the slider).
+
+```typescript
+slideStart: (zoomist: Zoomist, value: number, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `value` | `number` | The slider value (`0`–`100`) at the start of sliding |
+| `event` | `Event` | The native pointer or touch event |
+
+```typescript
+zoomist.on('slideStart', (zoomist, value, event) => {
+  console.log('Slide started at value:', value)
+})
+```
+
+---
+
+### `slide`
+
+Fired continuously while the user is sliding.
+
+```typescript
+slide: (zoomist: Zoomist, value: number, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `value` | `number` | The current slider value (`0`–`100`) |
+| `event` | `Event` | The native pointer or touch event |
+
+```typescript
+zoomist.on('slide', (zoomist, value, event) => {
+  console.log('Sliding, value:', value)
+})
+```
+
+---
+
+### `slideEnd`
+
+Fired when the user releases the slider.
+
+```typescript
+slideEnd: (zoomist: Zoomist, value: number, event: Event) => void
+```
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `zoomist` | `Zoomist` | The Zoomist instance |
+| `value` | `number` | The final slider value (`0`–`100`) |
+| `event` | `Event` | The native pointer or touch event |
+
+```typescript
+zoomist.on('slideEnd', (zoomist, value, event) => {
+  console.log('Slide ended at value:', value)
+})
+```
+
+---
+
+## All events reference
+
+| Event | Parameters | When it fires |
+| --- | --- | --- |
+| `ready` | `(zoomist)` | Instance finishes initializing |
+| `reset` | `(zoomist)` | `reset()` is called |
+| `resize` | `(zoomist)` | Container or image size changes |
+| `beforeDestroy` | `(zoomist)` | Before `destroy()` runs |
+| `destroy` | `(zoomist)` | After `destroy()` completes |
+| `beforeUpdate` | `(zoomist)` | Before `update()` runs |
+| `update` | `(zoomist)` | After `update()` completes |
+| `zoom` | `(zoomist, scale)` | Scale changes |
+| `wheel` | `(zoomist, scale, event)` | Mouse wheel zoom |
+| `dragStart` | `(zoomist, transform, event)` | Drag begins |
+| `drag` | `(zoomist, transform, event)` | Dragging in progress |
+| `dragEnd` | `(zoomist, transform, event)` | Drag ends |
+| `pinchStart` | `(zoomist, scale, event)` | Pinch begins |
+| `pinch` | `(zoomist, scale, event)` | Pinching in progress |
+| `pinchEnd` | `(zoomist, scale, event)` | Pinch ends |
+| `slideStart` | `(zoomist, value, event)` | Slider interaction begins |
+| `slide` | `(zoomist, value, event)` | Sliding in progress |
+| `slideEnd` | `(zoomist, value, event)` | Slider interaction ends |

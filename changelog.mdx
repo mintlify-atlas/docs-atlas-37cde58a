@@ -1,0 +1,56 @@
+---
+title: "Changelog"
+description: "Release history and version notes for Zoomist"
+---
+
+All notable changes to Zoomist are documented here. For a full list of releases, visit the [GitHub releases page](https://github.com/cotton123236/zoomist/releases).
+
+---
+
+## Version 2.2.0
+
+**Released:** 2024-03-16
+
+### New features
+
+<Check>Add `smooth` option for smoother dragging experience.</Check>
+
+### Bug fixes
+
+- Fix ShadowRoot support.
+
+---
+
+## Version 2.1.1
+
+**Released:** 2024-06-15
+
+### Patches
+
+- Change Zoomist first parameter type to `HTMLElement | string` to enhance IDE hints.
+
+---
+
+## Version 2.1.0
+
+**Released:** 2024-06-14
+
+### New features
+
+<Check>Use `e.preventDefault()` instead of css `pointer-events: none;` when dragging and touching.</Check>
+
+<Check>Add options `disableDraggingClass` and `disableWheelingClass`.</Check>
+
+<Check>Add options `dragReleaseOnBounds` and `wheelReleaseOnMinMax` to enable page scrolling in some cases.</Check>
+
+<Check>Add methods `isOnBoundTop`, `isOnBoundBottom`, `isOnBoundLeft`, `isOnBoundRight`, `isOnBoundX`, `isOnBoundY`, `isOnMinScale`, `isOnMaxScale`.</Check>
+
+---
+
+## Version 2.0.12
+
+**Released:** 2024-06-06
+
+### Bug fixes
+
+- Add attribute `type="button"` to default zoomer-buttons to prevent form submission.

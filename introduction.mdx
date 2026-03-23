@@ -1,0 +1,79 @@
+---
+title: Introduction
+description: Zoomist is a TypeScript library for adding zoom, drag, and pinch-to-zoom functionality to any HTML element, with full mobile support.
+---
+
+<img
+  className="block"
+  src="https://media.brand.dev/abf3dde7-926c-4a9d-bc65-e6b38d0ecd22.svg"
+  alt="Zoomist"
+  style={{ width: "200px", marginBottom: "2rem" }}
+/>
+
+# Zoomist
+
+Zoomist is a lightweight, zero-dependency TypeScript library that lets you add zoom, drag, and pinch-to-zoom interactions to any HTML element on your page. It works seamlessly on both desktop and mobile devices.
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install Zoomist via npm or include it via CDN
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get a working zoom element in under 5 minutes
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/constructor">
+    Explore the full API including options, methods, and events
+  </Card>
+  <Card title="GitHub" icon="github" href="https://github.com/cotton123236/zoomist">
+    View source code, open issues, and contribute
+  </Card>
+</CardGroup>
+
+## Key features
+
+<CardGroup cols={2}>
+  <Card title="Mouse wheel zoom" icon="magnifying-glass-plus">
+    Zoom in and out using the mouse wheel with configurable zoom ratio
+  </Card>
+  <Card title="Drag to pan" icon="hand">
+    Click and drag to pan around the zoomed element
+  </Card>
+  <Card title="Pinch to zoom" icon="mobile">
+    Native pinch-to-zoom gesture support for mobile devices
+  </Card>
+  <Card title="Boundary constraints" icon="border-all">
+    Keep content within bounds so users can't pan off screen
+  </Card>
+  <Card title="Slider module" icon="sliders">
+    Built-in slider UI for controlling the zoom level
+  </Card>
+  <Card title="Zoomer module" icon="circle-plus">
+    Built-in zoom in, zoom out, and reset button controls
+  </Card>
+  <Card title="Smooth animation" icon="wand-magic-sparkles">
+    Optional momentum-based smooth drag with configurable damping
+  </Card>
+  <Card title="TypeScript-first" icon="file-code">
+    Full TypeScript type definitions for an excellent developer experience
+  </Card>
+</CardGroup>
+
+## Why Zoomist?
+
+Zoomist focuses on simplicity and flexibility. Unlike heavier image viewer libraries, Zoomist works on **any HTML element** — not just images. It has zero dependencies, ships as both UMD and ES module builds, and gives you a comprehensive event API to hook into every interaction.
+
+```typescript
+import Zoomist from 'zoomist'
+import 'zoomist/css'
+
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  bounds: true,
+  slider: true,
+  zoomer: true
+})
+```
+
+## Browser support
+
+Zoomist works in all modern browsers including Chrome, Firefox, Safari, and Edge. Mobile browsers with touch support are fully supported, including iOS Safari and Android Chrome.

@@ -1,0 +1,225 @@
+---
+title: "Initialization"
+description: "How to create and configure a Zoomist instance"
+---
+
+Zoomist is initialized by calling `new Zoomist()` with a target element and an optional options object. The constructor sets up event listeners, calculates container and image dimensions, and mounts any configured modules.
+
+## Constructor signature
+
+```typescript
+new Zoomist(element: string | HTMLElement, options?: ZoomistOptions): Zoomist
+```
+
+<ParamField path="element" type="string | HTMLElement" required>
+  A CSS selector string (e.g. `'.zoomist-container'`) or a direct `HTMLElement` reference. Zoomist will throw an error if the element cannot be found in the DOM.
+</ParamField>
+
+<ParamField path="options" type="ZoomistOptions">
+  An optional configuration object. All properties are optional and fall back to their defaults when omitted.
+</ParamField>
+
+## Required HTML structure
+
+Before initializing, your markup must contain a wrapper and an image element inside the container:
+
+```html
+<div class="zoomist-container">
+  <div class="zoomist-wrapper">
+    <div class="zoomist-image">
+      <img src="photo.jpg" alt="Zoomable photo" />
+    </div>
+  </div>
+</div>
+```
+
+<Warning>
+  Both `.zoomist-wrapper` and `.zoomist-image` must be present inside the container. Zoomist will log a warning and abort initialization if either is missing.
+</Warning>
+
+## Basic example
+
+```javascript
+import 'zoomist/css'
+import Zoomist from 'zoomist'
+
+const zoomist = new Zoomist('.zoomist-container')
+```
+
+## Initialization steps
+
+<Steps>
+  <Step title="Resolve the element">
+    Zoomist accepts either a CSS selector string or a direct `HTMLElement`. It resolves the selector to a DOM node and attaches the instance to `element.zoomist` so you can retrieve it later.
+  </Step>
+  <Step title="Merge options">
+    The provided options are merged with the default options. Any omitted option falls back to its default value.
+  </Step>
+  <Step title="Calculate dimensions">
+    Zoomist reads the container's `offsetWidth` / `offsetHeight` and the image's bounding rect to build its internal `data` object. This data is used for bounds checking and scale calculations.
+  </Step>
+  <Step title="Bind event listeners">
+    Depending on your options, Zoomist attaches `wheel`, `mousedown`, or `touchstart` listeners to `.zoomist-wrapper`. A `ResizeObserver` is also created to keep dimensions in sync as the container resizes.
+  </Step>
+  <Step title="Mount modules">
+    If `slider` or `zoomer` options are set, Zoomist creates and appends the corresponding module elements and binds their interactions.
+  </Step>
+  <Step title="Emit ready">
+    Once mounted, Zoomist sets `instance.mounted = true` and emits the `ready` event.
+  </Step>
+</Steps>
+
+## Configuration options
+
+All options are optional. The table below lists every option with its default value.
+
+<ParamField path="draggable" type="boolean" default="true">
+  Allow the user to drag the image with a mouse or finger.
+</ParamField>
+
+<ParamField path="wheelable" type="boolean" default="true">
+  Allow zooming with the mouse wheel.
+</ParamField>
+
+<ParamField path="pinchable" type="boolean" default="true">
+  Allow pinch-to-zoom on touch devices.
+</ParamField>
+
+<ParamField path="bounds" type="boolean" default="true">
+  Constrain the image within the container so it cannot be dragged outside its edges. When `true`, `minScale` is also clamped to a minimum of `1`.
+</ParamField>
+
+<ParamField path="zoomRatio" type="number" default="0.1">
+  The fraction of the current scale to add or subtract on each zoom step (wheel tick or zoomer button click).
+</ParamField>
+
+<ParamField path="maxScale" type="number" default="10">
+  The maximum scale the image can reach. Must be greater than `minScale`.
+</ParamField>
+
+<ParamField path="minScale" type="number" default="1">
+  The minimum scale the image can reach. Must be less than `maxScale`.
+</ParamField>
+
+<ParamField path="initScale" type="number | null" default="null">
+  The scale applied when the instance is first mounted and when `reset()` is called. Defaults to `minScale` when `null`.
+</ParamField>
+
+<ParamField path="dragReleaseOnBounds" type="boolean" default="false">
+  When `true` and the image is touching a boundary, touch drag events bubble to the page so the user can continue scrolling the document.
+</ParamField>
+
+<ParamField path="wheelReleaseOnMinMax" type="boolean" default="false">
+  When `true` and the image is at `minScale` or `maxScale`, wheel events bubble to the page rather than being consumed by Zoomist.
+</ParamField>
+
+<ParamField path="disableDraggingClass" type="string" default="'.zoomist-not-draggable'">
+  Elements matching this CSS selector will not trigger drag interactions, even when `draggable` is `true`. Useful for interactive elements inside the zoomable area.
+</ParamField>
+
+<ParamField path="disableWheelingClass" type="string" default="'.zoomist-not-wheelable'">
+  Elements matching this CSS selector will not trigger wheel-zoom, even when `wheelable` is `true`.
+</ParamField>
+
+<ParamField path="smooth" type="boolean | SmoothOptions" default="false">
+  Enable inertia-based smooth dragging. Pass `true` to use the default damping, or pass `{ damping: number }` to control the deceleration rate.
+</ParamField>
+
+## Full configuration example
+
+```javascript
+const zoomist = new Zoomist('.zoomist-container', {
+  draggable: true,
+  wheelable: true,
+  pinchable: true,
+  bounds: true,
+  zoomRatio: 0.1,
+  maxScale: 10,
+  minScale: 1,
+  initScale: null,
+  dragReleaseOnBounds: false,
+  wheelReleaseOnMinMax: false,
+  disableDraggingClass: '.zoomist-not-draggable',
+  disableWheelingClass: '.zoomist-not-wheelable',
+  smooth: false,
+})
+```
+
+## TypeScript usage
+
+Zoomist ships with full TypeScript types. Import `ZoomistOptions` to get autocomplete and type-checking on the options object.
+
+<CodeGroup>
+
+```typescript typed-initialization.ts
+import 'zoomist/css'
+import Zoomist from 'zoomist'
+import type { ZoomistOptions } from 'zoomist'
+
+const options: ZoomistOptions = {
+  maxScale: 5,
+  minScale: 1,
+  zoomRatio: 0.15,
+  bounds: true,
+  smooth: true,
+}
+
+const zoomist = new Zoomist('.zoomist-container', options)
+```
+
+```typescript with-events.ts
+import Zoomist from 'zoomist'
+import type { ZoomistOptions } from 'zoomist'
+
+const options: ZoomistOptions = {
+  maxScale: 8,
+  on: {
+    ready(zoomist) {
+      console.log('Zoomist is ready', zoomist)
+    },
+    zoom(zoomist, scale) {
+      console.log('Current scale:', scale)
+    },
+  },
+}
+
+const zoomist = new Zoomist(document.querySelector('.zoomist-container')!, options)
+```
+
+</CodeGroup>
+
+## Accessing the instance
+
+Zoomist attaches itself to the container element as `element.zoomist`. You can retrieve the instance at any point without keeping a separate reference:
+
+```javascript
+const container = document.querySelector('.zoomist-container')
+
+// The instance is attached during initialization
+const zoomist = new Zoomist(container, { maxScale: 4 })
+
+// Retrieve it later from the element
+console.log(container.zoomist === zoomist) // true
+
+// Or retrieve it from any reference to the element
+document.querySelector('.zoomist-container').zoomist.reset()
+```
+
+<Note>
+  The `element.zoomist` property is typed as `Zoomist | null` in the `ZoomistHTMLElement` interface. Import `ZoomistHTMLElement` and cast your element when you need type-safe access.
+</Note>
+
+## Chaining
+
+Most Zoomist methods return the instance, so you can chain calls:
+
+```javascript
+const zoomist = new Zoomist('.zoomist-container', { maxScale: 4 })
+
+zoomist
+  .zoom(0.2)
+  .move({ x: 10, y: 0 })
+  .on('drag', (instance, transform) => {
+    console.log(transform)
+  })
+```

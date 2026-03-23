@@ -1,0 +1,361 @@
+---
+title: "TypeScript types"
+description: "TypeScript type definitions exported by Zoomist"
+---
+
+Zoomist ships full TypeScript type definitions. Import the `Zoomist` class as the default export and named types as type-only imports:
+
+```typescript
+import Zoomist from 'zoomist'
+import type { ZoomistOptions, ImageData, EventTypes } from 'zoomist'
+```
+
+---
+
+## `ZoomistOptions`
+
+The options object accepted by the constructor. Every property is optional.
+
+```typescript
+type ZoomistOptions = Partial<ZoomistDefaultOptions>
+```
+
+See [Options](/api/options) for full documentation of each field. Use this type when defining an options object separately:
+
+```typescript
+import Zoomist from 'zoomist'
+import type { ZoomistOptions } from 'zoomist'
+
+const options: ZoomistOptions = {
+  maxScale: 4,
+  bounds: true,
+  slider: true,
+}
+
+const zoomist = new Zoomist('.zoomist-container', options)
+```
+
+---
+
+## `ZoomistDefaultOptions`
+
+The full options interface with all properties required. `ZoomistOptions` is `Partial<ZoomistDefaultOptions>`.
+
+```typescript
+interface ZoomistDefaultOptions {
+  draggable: boolean
+  wheelable: boolean
+  pinchable: boolean
+  bounds: boolean
+  zoomRatio: number
+  minScale: number
+  maxScale: number
+  initScale: number | null
+  dragReleaseOnBounds: boolean
+  wheelReleaseOnMinMax: boolean
+  disableDraggingClass: string
+  disableWheelingClass: string
+  smooth: boolean | SmoothOptions
+  slider?: boolean | SliderOptions
+  zoomer?: boolean | ZoomerOptions
+  on?: {
+    [event in EventTypes]?: EventOptions[event]
+  }
+}
+```
+
+---
+
+## `SmoothOptions`
+
+Configuration for the smooth drag animation.
+
+```typescript
+interface SmoothOptions {
+  damping: number
+}
+```
+
+<ResponseField name="damping" type="number" required>
+  Controls the deceleration rate of the drag inertia animation. Clamped internally to the range `[0.1, 1]`. Lower values produce longer glides; higher values stop the animation sooner.
+</ResponseField>
+
+```typescript
+import Zoomist from 'zoomist'
+import type { SmoothOptions } from 'zoomist'
+
+const smooth: SmoothOptions = { damping: 0.6 }
+
+const zoomist = new Zoomist('.zoomist-container', { smooth })
+```
+
+---
+
+## `SliderOptions`
+
+Configuration for the slider module.
+
+```typescript
+interface SliderOptions {
+  el: string | HTMLElement | null
+  direction: 'horizontal' | 'vertical'
+}
+```
+
+<ResponseField name="el" type="string | HTMLElement | null">
+  A CSS selector string or `HTMLElement` for the slider container element. When `null` and `slider: true`, Zoomist auto-generates the element.
+</ResponseField>
+
+<ResponseField name="direction" type="'horizontal' | 'vertical'">
+  The orientation of the slider track.
+</ResponseField>
+
+```typescript
+import type { SliderOptions } from 'zoomist'
+
+const slider: SliderOptions = {
+  el: '#my-slider',
+  direction: 'vertical',
+}
+```
+
+---
+
+## `ZoomerOptions`
+
+Configuration for the zoomer button module.
+
+```typescript
+interface ZoomerOptions {
+  el: string | HTMLElement | null
+  inEl: string | HTMLElement | null
+  outEl: string | HTMLElement | null
+  resetEl: string | HTMLElement | null
+  disabledClass: string | false | null
+}
+```
+
+<ResponseField name="el" type="string | HTMLElement | null">
+  The zoomer wrapper element.
+</ResponseField>
+
+<ResponseField name="inEl" type="string | HTMLElement | null">
+  The zoom-in button element.
+</ResponseField>
+
+<ResponseField name="outEl" type="string | HTMLElement | null">
+  The zoom-out button element.
+</ResponseField>
+
+<ResponseField name="resetEl" type="string | HTMLElement | null">
+  The reset button element.
+</ResponseField>
+
+<ResponseField name="disabledClass" type="string | false | null">
+  CSS class applied to zoom-in/out buttons when at their scale limits. Set to `false` or `null` to disable this feature.
+</ResponseField>
+
+```typescript
+import type { ZoomerOptions } from 'zoomist'
+
+const zoomer: ZoomerOptions = {
+  el: '#my-zoomer',
+  inEl: '#zoom-in',
+  outEl: '#zoom-out',
+  resetEl: '#zoom-reset',
+  disabledClass: 'is-disabled',
+}
+```
+
+---
+
+## `EventOptions`
+
+An interface mapping each event name to its handler function signature.
+
+```typescript
+interface EventOptions {
+  ready:         (zoomist: Zoomist) => void
+  reset:         (zoomist: Zoomist) => void
+  resize:        (zoomist: Zoomist) => void
+  beforeDestroy: (zoomist: Zoomist) => void
+  destroy:       (zoomist: Zoomist) => void
+  beforeUpdate:  (zoomist: Zoomist) => void
+  update:        (zoomist: Zoomist) => void
+  zoom:          (zoomist: Zoomist, scale: number) => void
+  wheel:         (zoomist: Zoomist, scale: number, event: WheelEvent) => void
+  dragStart:     (zoomist: Zoomist, transform: { x: number; y: number }, event: Event) => void
+  drag:          (zoomist: Zoomist, transform: { x: number; y: number }, event: Event) => void
+  dragEnd:       (zoomist: Zoomist, transform: { x: number; y: number }, event: Event) => void
+  pinchStart:    (zoomist: Zoomist, scale: number, event: Event) => void
+  pinch:         (zoomist: Zoomist, scale: number, event: Event) => void
+  pinchEnd:      (zoomist: Zoomist, scale: number, event: Event) => void
+  slideStart:    (zoomist: Zoomist, value: number, event: Event) => void
+  slide:         (zoomist: Zoomist, value: number, event: Event) => void
+  slideEnd:      (zoomist: Zoomist, value: number, event: Event) => void
+}
+```
+
+---
+
+## `EventTypes`
+
+A union type of all valid event name strings.
+
+```typescript
+type EventTypes = keyof EventOptions
+// 'ready' | 'reset' | 'resize' | 'beforeDestroy' | 'destroy' |
+// 'beforeUpdate' | 'update' | 'zoom' | 'wheel' |
+// 'dragStart' | 'drag' | 'dragEnd' |
+// 'pinchStart' | 'pinch' | 'pinchEnd' |
+// 'slideStart' | 'slide' | 'slideEnd'
+```
+
+Use `EventTypes` to type event name parameters:
+
+```typescript
+import Zoomist from 'zoomist'
+import type { EventTypes, EventOptions } from 'zoomist'
+
+function registerHandler<T extends EventTypes>(
+  zoomist: Zoomist,
+  event: T,
+  handler: EventOptions[T]
+) {
+  zoomist.on(event, handler)
+}
+```
+
+---
+
+## `ImageData`
+
+Dimensional data returned by `getImageData()`.
+
+```typescript
+interface ImageData {
+  originWidth: number
+  originHeight: number
+  width: number
+  height: number
+}
+```
+
+<ResponseField name="originWidth" type="number">
+  The natural (unscaled) width of the image element in pixels.
+</ResponseField>
+
+<ResponseField name="originHeight" type="number">
+  The natural (unscaled) height of the image element in pixels.
+</ResponseField>
+
+<ResponseField name="width" type="number">
+  The current rendered width of the image (accounting for scale) in pixels.
+</ResponseField>
+
+<ResponseField name="height" type="number">
+  The current rendered height of the image (accounting for scale) in pixels.
+</ResponseField>
+
+---
+
+## `ContainerData`
+
+Dimensional data returned by `getContainerData()`.
+
+```typescript
+interface ContainerData {
+  width: number
+  height: number
+}
+```
+
+<ResponseField name="width" type="number">
+  The current width of the container element in pixels.
+</ResponseField>
+
+<ResponseField name="height" type="number">
+  The current height of the container element in pixels.
+</ResponseField>
+
+---
+
+## `MoveToParams`
+
+The parameter object accepted by `moveTo()`.
+
+```typescript
+interface MoveToParams {
+  x?: number | MoveToKeywordsX
+  y?: number | MoveToKeywordsY
+}
+```
+
+<ResponseField name="x" type="number | MoveToKeywordsX">
+  The target horizontal position in pixels, or a `MoveToKeywordsX` keyword string.
+</ResponseField>
+
+<ResponseField name="y" type="number | MoveToKeywordsY">
+  The target vertical position in pixels, or a `MoveToKeywordsY` keyword string.
+</ResponseField>
+
+---
+
+## `MoveToKeywordsX`
+
+Keyword strings accepted by the `x` property of `MoveToParams`.
+
+```typescript
+type MoveToKeywordsX = 'left' | 'right' | 'center'
+```
+
+| Value | Effect |
+| --- | --- |
+| `'left'` | Align the image flush with the left bound |
+| `'right'` | Align the image flush with the right bound |
+| `'center'` | Center the image horizontally |
+
+---
+
+## `MoveToKeywordsY`
+
+Keyword strings accepted by the `y` property of `MoveToParams`.
+
+```typescript
+type MoveToKeywordsY = 'top' | 'bottom' | 'center'
+```
+
+| Value | Effect |
+| --- | --- |
+| `'top'` | Align the image flush with the top bound |
+| `'bottom'` | Align the image flush with the bottom bound |
+| `'center'` | Center the image vertically |
+
+---
+
+## `ZoomistHTMLElement`
+
+An extension of `HTMLElement` that includes a `zoomist` property holding the attached instance.
+
+```typescript
+interface ZoomistHTMLElement extends HTMLElement {
+  zoomist: Zoomist | null
+}
+```
+
+<ResponseField name="zoomist" type="Zoomist | null">
+  The Zoomist instance attached to this element. Set to `null` after `destroy()` is called.
+</ResponseField>
+
+Use this type when you need to access the instance via the DOM element:
+
+```typescript
+import type { ZoomistHTMLElement } from 'zoomist'
+
+const el = document.querySelector('.zoomist-container') as ZoomistHTMLElement
+const instance = el.zoomist
+
+if (instance) {
+  instance.zoom(0.1)
+}
+```

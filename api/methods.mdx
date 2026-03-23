@@ -1,0 +1,490 @@
+---
+title: "Methods"
+description: "All instance methods available on a Zoomist instance"
+---
+
+All methods are available on the `Zoomist` instance returned by the constructor. Most methods return `this` (the `Zoomist` instance) so calls can be chained.
+
+```typescript
+const zoomist = new Zoomist('.zoomist-container')
+
+// chaining example
+zoomist.zoomTo(2).moveTo({ x: 'center', y: 'center' })
+```
+
+## Zoom methods
+
+### `zoom()`
+
+Zoom relative to the current scale.
+
+```typescript
+zoom(ratio: number, pointer?: { clientX: number; clientY: number } | boolean): Zoomist
+```
+
+<ParamField path="ratio" type="number" required>
+  The relative zoom amount. A value of `0.1` zooms in by 10% of the current scale; `-0.1` zooms out by 10%. Internally, the new scale is computed as `currentScale * (ratio + 1)`, clamped to `[minScale, maxScale]`.
+</ParamField>
+
+<ParamField path="pointer" type="{ clientX: number; clientY: number } | boolean">
+  The focal point for the zoom. When `true` (default), zooms toward the center of the container. When `false`, applies the scale change without translating the image. Pass a `{ clientX, clientY }` object to zoom toward a specific screen coordinate.
+</ParamField>
+
+```typescript
+// zoom in 10% toward the container center
+zoomist.zoom(0.1)
+
+// zoom out 10% toward the container center
+zoomist.zoom(-0.1)
+
+// zoom in toward a specific pointer position
+zoomist.zoom(0.1, { clientX: 320, clientY: 240 })
+
+// zoom in without panning
+zoomist.zoom(0.1, false)
+```
+
+---
+
+### `zoomTo()`
+
+Zoom to an absolute scale value.
+
+```typescript
+zoomTo(ratio: number, pointer?: { clientX: number; clientY: number } | boolean): Zoomist
+```
+
+<ParamField path="ratio" type="number" required>
+  The target absolute scale. The value is clamped to `[minScale, maxScale]`. For example, `2` sets the scale to 2× regardless of the current scale.
+</ParamField>
+
+<ParamField path="pointer" type="{ clientX: number; clientY: number } | boolean" default="true">
+  The focal point for the zoom. Behavior is identical to the `pointer` parameter of `zoom()`. Defaults to `true` (container center).
+</ParamField>
+
+```typescript
+// zoom to exactly 2×
+zoomist.zoomTo(2)
+
+// zoom to 3× toward a specific pointer position
+zoomist.zoomTo(3, { clientX: 320, clientY: 240 })
+
+// zoom to 1.5× without panning
+zoomist.zoomTo(1.5, false)
+```
+
+---
+
+## Movement methods
+
+### `move()`
+
+Move (translate) the image relative to its current position.
+
+```typescript
+move(params: { x: number; y: number }): Zoomist
+```
+
+<ParamField path="params" type="object" required>
+  <Expandable title="properties" defaultOpen>
+    <ParamField path="x" type="number" required>
+      Horizontal offset in pixels relative to the current position. Positive values move right; negative values move left.
+    </ParamField>
+    <ParamField path="y" type="number" required>
+      Vertical offset in pixels relative to the current position. Positive values move down; negative values move up.
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+```typescript
+// move 20px to the right
+zoomist.move({ x: 20, y: 0 })
+
+// move 10px left and 30px up
+zoomist.move({ x: -10, y: -30 })
+```
+
+---
+
+### `moveTo()`
+
+Move (translate) the image to an absolute position or a named keyword.
+
+```typescript
+moveTo(params: MoveToParams): Zoomist
+```
+
+<ParamField path="params" type="MoveToParams" required>
+  <Expandable title="properties" defaultOpen>
+    <ParamField path="x" type="number | 'left' | 'right' | 'center'">
+      The absolute horizontal position in pixels, or a keyword. Keywords:
+      - `'left'` — flush with the left bound
+      - `'right'` — flush with the right bound
+      - `'center'` — centered horizontally
+    </ParamField>
+    <ParamField path="y" type="number | 'top' | 'bottom' | 'center'">
+      The absolute vertical position in pixels, or a keyword. Keywords:
+      - `'top'` — flush with the top bound
+      - `'bottom'` — flush with the bottom bound
+      - `'center'` — centered vertically
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<Note>
+  When `bounds` is `true`, numeric values are clamped to the valid translation range so the image stays within the container.
+</Note>
+
+```typescript
+// move to absolute pixel position
+zoomist.moveTo({ x: 50, y: -20 })
+
+// move to named position
+zoomist.moveTo({ x: 'center', y: 'center' })
+
+// move to top-left corner
+zoomist.moveTo({ x: 'left', y: 'top' })
+
+// move only the vertical axis
+zoomist.moveTo({ y: 'bottom' })
+```
+
+---
+
+### `slideTo()`
+
+Set the zoom level using a slider value between 0 and 100.
+
+```typescript
+slideTo(value: number): Zoomist
+```
+
+<ParamField path="value" type="number" required>
+  A number in the range `0`–`100`. `0` maps to `minScale`; `100` maps to `maxScale`. The corresponding scale is calculated as `((maxScale - minScale) * value) / 100 + minScale`.
+</ParamField>
+
+```typescript
+// set zoom to 50% of the scale range
+zoomist.slideTo(50)
+
+// set zoom to minimum
+zoomist.slideTo(0)
+
+// set zoom to maximum
+zoomist.slideTo(100)
+```
+
+---
+
+## Lifecycle methods
+
+### `reset()`
+
+Reset the image to its initial scale and position.
+
+```typescript
+reset(): Zoomist
+```
+
+Resets `scale` to `initScale` (or `minScale` if `initScale` is `null`) and resets `translateX`/`translateY` to `0`. Emits the `reset` event.
+
+```typescript
+zoomist.reset()
+```
+
+---
+
+### `update()`
+
+Re-initialize the Zoomist instance, optionally with new options.
+
+```typescript
+update(options?: ZoomistOptions): Zoomist
+```
+
+<ParamField path="options" type="ZoomistOptions">
+  New options to apply. When provided, the options object completely replaces the current options (merged with defaults). When omitted, the instance re-initializes with its existing options.
+</ParamField>
+
+Emits `beforeUpdate` before and `update` after re-initialization.
+
+```typescript
+// re-initialize with existing options
+zoomist.update()
+
+// re-initialize with new options
+zoomist.update({ maxScale: 5, wheelable: false })
+```
+
+---
+
+### `destroy()`
+
+Destroy the Zoomist instance and clean up all event listeners.
+
+```typescript
+destroy(cleanStyle?: boolean): null
+```
+
+<ParamField path="cleanStyle" type="boolean" default="false">
+  When `true`, calls `reset()` and removes all inline styles from the image element before destroying. When `false`, the image retains whatever transform was applied.
+</ParamField>
+
+Emits `beforeDestroy` before and `destroy` after cleanup. Returns `null`.
+
+<Warning>
+  After calling `destroy()`, the Zoomist instance is no longer usable. The `zoomist` property on the element is set to `null`.
+</Warning>
+
+```typescript
+// destroy and leave transform styles in place
+zoomist.destroy()
+
+// destroy and reset image to original position/scale
+zoomist.destroy(true)
+```
+
+---
+
+## Module methods
+
+### `destroySlider()`
+
+Destroy the slider module and remove its event listeners.
+
+```typescript
+destroySlider(): void
+```
+
+```typescript
+zoomist.destroySlider()
+```
+
+---
+
+### `destroyZoomer()`
+
+Destroy the zoomer module and remove its event listeners.
+
+```typescript
+destroyZoomer(): void
+```
+
+```typescript
+zoomist.destroyZoomer()
+```
+
+---
+
+### `destroyModules()`
+
+Destroy all active modules (slider and zoomer).
+
+```typescript
+destroyModules(): void
+```
+
+```typescript
+zoomist.destroyModules()
+```
+
+---
+
+## Event methods
+
+### `on()`
+
+Register an event handler on the instance.
+
+```typescript
+on<T extends EventTypes>(event: T, handler: EventOptions[T]): Zoomist
+```
+
+<ParamField path="event" type="EventTypes" required>
+  The event name or a space-separated list of event names. See [Events](/api/events) for all available event names.
+</ParamField>
+
+<ParamField path="handler" type="Function" required>
+  The callback function. Its signature depends on the event. See [Events](/api/events) for each event's signature.
+</ParamField>
+
+```typescript
+// single event
+zoomist.on('zoom', (zoomist, scale) => {
+  console.log('scale changed to', scale)
+})
+
+// multiple events with space-separated string
+zoomist.on('drag dragEnd', (zoomist, transform, event) => {
+  console.log('transform:', transform)
+})
+
+// chaining
+zoomist
+  .on('ready', (zoomist) => console.log('ready'))
+  .on('zoom', (zoomist, scale) => console.log(scale))
+```
+
+---
+
+## Data getter methods
+
+### `getImageData()`
+
+Return dimensional data for the current image element.
+
+```typescript
+getImageData(): ImageData
+```
+
+<ResponseField name="ImageData" type="object">
+  <Expandable title="properties" defaultOpen>
+    <ResponseField name="originWidth" type="number">
+      The natural (unscaled) width of the image element in pixels.
+    </ResponseField>
+    <ResponseField name="originHeight" type="number">
+      The natural (unscaled) height of the image element in pixels.
+    </ResponseField>
+    <ResponseField name="width" type="number">
+      The current rendered width of the image (accounting for scale) in pixels.
+    </ResponseField>
+    <ResponseField name="height" type="number">
+      The current rendered height of the image (accounting for scale) in pixels.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+```typescript
+const imageData = zoomist.getImageData()
+console.log(imageData.width, imageData.height)
+```
+
+---
+
+### `getContainerData()`
+
+Return dimensional data for the container element.
+
+```typescript
+getContainerData(): ContainerData
+```
+
+<ResponseField name="ContainerData" type="object">
+  <Expandable title="properties" defaultOpen>
+    <ResponseField name="width" type="number">
+      The current width of the container element in pixels.
+    </ResponseField>
+    <ResponseField name="height" type="number">
+      The current height of the container element in pixels.
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+```typescript
+const containerData = zoomist.getContainerData()
+console.log(containerData.width, containerData.height)
+```
+
+---
+
+### `getSliderValue()`
+
+Return the current slider value.
+
+```typescript
+getSliderValue(): number | null
+```
+
+Returns the current slider position as a number in the range `0`–`100`, or `null` if the slider module is not active.
+
+```typescript
+const value = zoomist.getSliderValue()
+if (value !== null) {
+  console.log(`Slider is at ${value}%`)
+}
+```
+
+---
+
+## Boundary check methods
+
+All boundary check methods return a `boolean`. They always return `false` when the `bounds` option is `false`.
+
+### `isOnBoundX()`
+
+Return `true` if the image is touching either the left or right bound.
+
+```typescript
+isOnBoundX(): boolean
+```
+
+### `isOnBoundY()`
+
+Return `true` if the image is touching either the top or bottom bound.
+
+```typescript
+isOnBoundY(): boolean
+```
+
+### `isOnBoundTop()`
+
+Return `true` if the image is touching the top bound.
+
+```typescript
+isOnBoundTop(): boolean
+```
+
+### `isOnBoundBottom()`
+
+Return `true` if the image is touching the bottom bound.
+
+```typescript
+isOnBoundBottom(): boolean
+```
+
+### `isOnBoundLeft()`
+
+Return `true` if the image is touching the left bound.
+
+```typescript
+isOnBoundLeft(): boolean
+```
+
+### `isOnBoundRight()`
+
+Return `true` if the image is touching the right bound.
+
+```typescript
+isOnBoundRight(): boolean
+```
+
+### `isOnMinScale()`
+
+Return `true` if the current scale equals `minScale`.
+
+```typescript
+isOnMinScale(): boolean
+```
+
+### `isOnMaxScale()`
+
+Return `true` if the current scale equals `maxScale`.
+
+```typescript
+isOnMaxScale(): boolean
+```
+
+```typescript
+// boundary check usage examples
+if (zoomist.isOnBoundX()) {
+  console.log('image is against a horizontal bound')
+}
+
+if (zoomist.isOnMinScale()) {
+  console.log('cannot zoom out further')
+}
+
+if (zoomist.isOnMaxScale()) {
+  console.log('cannot zoom in further')
+}
+```

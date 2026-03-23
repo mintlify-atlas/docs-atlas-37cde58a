@@ -1,0 +1,117 @@
+---
+title: "Smooth dragging"
+description: "Enable momentum-based smooth drag animation"
+---
+
+The `smooth` option adds momentum (inertia) to drag interactions. After the user releases the image, it continues to glide and decelerates naturally, rather than stopping instantly.
+
+## Enabling smooth dragging
+
+<Tabs>
+  <Tab title="Default settings">
+    Set `smooth: true` to enable momentum dragging with a default damping value of `0.6`:
+
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      smooth: true
+    })
+    ```
+  </Tab>
+  <Tab title="Custom damping">
+    Pass an object to control the damping amount:
+
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      smooth: {
+        damping: 0.8
+      }
+    })
+    ```
+  </Tab>
+</Tabs>
+
+## Understanding damping
+
+The `damping` value controls how quickly the momentum fades after the user releases the drag. It accepts a number between `0.1` and `1.0`.
+
+| Damping value | Effect |
+| ------------- | ------ |
+| `0.1` | High friction — content stops very quickly after release |
+| `0.6` | Default — balanced feel suitable for most use cases |
+| `0.9` | Low friction — content slides for a noticeably longer time |
+| `1.0` | Effectively no friction — content slides until velocity naturally reaches zero |
+
+<Tip>
+  A damping value between `0.5` and `0.7` works well for most interactive image viewers. Use higher values (closer to `1.0`) for map-like experiences where users expect content to keep scrolling.
+</Tip>
+
+<Warning>
+  Values outside the `0.1`–`1.0` range are clamped internally. Setting `damping: 0` is equivalent to `damping: 0.1`, and values above `1.0` are clamped to `1.0`.
+</Warning>
+
+## How it works
+
+When `smooth` is enabled, Zoomist tracks the velocity of each drag gesture. On release, it calls `requestAnimationFrame` in a loop, applying exponential deceleration on each frame:
+
+```
+velocity *= Math.exp(-elapsed / duration)
+```
+
+Where `duration` is derived from the damping value: `duration = (1100 - damping * 1000) * 0.5`. A higher damping produces a longer duration, so the velocity decays more slowly and the image slides further.
+
+When the instance is destroyed, any pending animation frame is cancelled via `cancelAnimationFrame`, so there are no memory leaks or dangling callbacks.
+
+## Configuration examples
+
+<CodeGroup>
+
+```js Smooth disabled (default)
+const zoomist = new Zoomist('.zoomist-container', {
+  smooth: false // default — no momentum
+})
+```
+
+```js Smooth enabled with defaults
+const zoomist = new Zoomist('.zoomist-container', {
+  smooth: true // damping: 0.6
+})
+```
+
+```js Light momentum
+const zoomist = new Zoomist('.zoomist-container', {
+  smooth: {
+    damping: 0.3
+  }
+})
+```
+
+```js Heavy momentum
+const zoomist = new Zoomist('.zoomist-container', {
+  smooth: {
+    damping: 0.9
+  }
+})
+```
+
+</CodeGroup>
+
+## When to use smooth dragging
+
+<CardGroup cols={2}>
+  <Card title="Image viewers" icon="image">
+    Product photography or gallery lightboxes benefit from a polished, fluid feel when panning around a zoomed image.
+  </Card>
+  <Card title="Interactive maps" icon="map">
+    Map-like UIs where users expect momentum scrolling to continue after a quick flick gesture.
+  </Card>
+  <Card title="Product showcases" icon="tag">
+    Presenting a detailed product shot where the user is encouraged to explore — smooth dragging makes exploration feel natural.
+  </Card>
+  <Card title="Presentations" icon="presentation-screen">
+    Slide or diagram viewers where smooth panning reduces cognitive load when navigating large content.
+  </Card>
+</CardGroup>
+
+<Info>
+  Smooth dragging applies to mouse drag and touch drag interactions. Pinch-to-zoom momentum follows the same animation system on supported touch devices.
+</Info>

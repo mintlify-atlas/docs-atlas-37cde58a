@@ -1,0 +1,181 @@
+---
+title: "Zoomer module"
+description: "Add zoom in, zoom out, and reset buttons"
+---
+
+The Zoomer module adds UI buttons that let users zoom in, zoom out, and reset the image to its initial scale with a single click. The buttons are automatically disabled when the image reaches its minimum or maximum scale.
+
+## Quick start
+
+Pass `zoomer: true` to enable the zoomer with its default options. Zoomist auto-generates the button HTML and inserts it into the container.
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  zoomer: true
+})
+```
+
+<Note>
+  Importing `zoomist/css` (or the CDN stylesheet) is required for the auto-generated zoomer to be styled correctly.
+</Note>
+
+## Auto-generated HTML structure
+
+When `zoomer: true` is set, Zoomist appends the following markup inside `.zoomist-container`:
+
+```html
+<div class="zoomist-zoomer">
+  <button class="zoomist-zoomer-in">+</button>
+  <button class="zoomist-zoomer-out">-</button>
+  <button class="zoomist-zoomer-reset">↺</button>
+</div>
+```
+
+| Class | Purpose |
+| ----- | ------- |
+| `zoomist-zoomer` | Wrapper element for all buttons |
+| `zoomist-zoomer-in` | Zoom in button |
+| `zoomist-zoomer-out` | Zoom out button |
+| `zoomist-zoomer-reset` | Reset to initial scale button |
+
+## Configuration options
+
+Pass an object instead of `true` for full control:
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  zoomer: {
+    el: null,                              // Wrapper — null means auto-generate
+    inEl: null,                            // Zoom in button element or selector
+    outEl: null,                           // Zoom out button element or selector
+    resetEl: null,                         // Reset button element or selector
+    disabledClass: 'zoomist-zoomer-disabled' // Class applied when button is inactive
+  }
+})
+```
+
+### `disabledClass`
+
+When the image is at `minScale`, the zoom-out button receives the `disabledClass`. When at `maxScale`, the zoom-in button receives it. Set to `false` or `null` to disable this behaviour entirely.
+
+<CodeGroup>
+
+```js Default disabled class
+const zoomist = new Zoomist('.zoomist-container', {
+  zoomer: {
+    disabledClass: 'zoomist-zoomer-disabled' // default
+  }
+})
+```
+
+```js Custom disabled class
+const zoomist = new Zoomist('.zoomist-container', {
+  zoomer: {
+    disabledClass: 'btn-disabled'
+  }
+})
+```
+
+```js Disabled class turned off
+const zoomist = new Zoomist('.zoomist-container', {
+  zoomer: {
+    disabledClass: false
+  }
+})
+```
+
+</CodeGroup>
+
+## Using custom button elements
+
+You can wire Zoomist's zoomer logic to your own buttons by providing CSS selectors or `HTMLElement` references.
+
+<Steps>
+  <Step title="Add your button HTML">
+    ```html
+    <div class="zoomist-container">
+      <div class="zoomist-wrapper">
+        <div class="zoomist-image">
+          <img src="photo.jpg" alt="Zoomable photo" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom controls placed anywhere in the page -->
+    <div class="my-controls">
+      <button class="btn-zoom-in">Zoom in</button>
+      <button class="btn-zoom-out">Zoom out</button>
+      <button class="btn-zoom-reset">Reset</button>
+    </div>
+    ```
+  </Step>
+  <Step title="Pass the selectors to Zoomist">
+    ```js
+    const zoomist = new Zoomist('.zoomist-container', {
+      zoomer: {
+        inEl: '.btn-zoom-in',
+        outEl: '.btn-zoom-out',
+        resetEl: '.btn-zoom-reset',
+        disabledClass: 'btn-disabled'
+      }
+    })
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  When providing individual button selectors (`inEl`, `outEl`, `resetEl`), you do not need to set `el`. Zoomist binds directly to each button.
+</Tip>
+
+## CSS customization
+
+Override the default zoomer styles by targeting the generated classes:
+
+```css
+.zoomist-zoomer {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.zoomist-zoomer-in,
+.zoomist-zoomer-out,
+.zoomist-zoomer-reset {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Style for the disabled state */
+.zoomist-zoomer-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+```
+
+## Full example
+
+```html
+<div class="zoomist-container">
+  <div class="zoomist-wrapper">
+    <div class="zoomist-image">
+      <img src="photo.jpg" alt="Zoomable photo" />
+    </div>
+  </div>
+</div>
+```
+
+```js
+const zoomist = new Zoomist('.zoomist-container', {
+  maxScale: 4,
+  zoomer: {
+    disabledClass: 'zoomist-zoomer-disabled'
+  }
+})
+```
