@@ -75,7 +75,7 @@ const zoomist = new Zoomist('.zoomist-container', {
 
 If your zoomable area contains interactive elements (such as buttons, links, or form controls), you may want those elements to receive clicks without triggering a drag. Add the class specified by `disableDraggingClass` to any child element that should not initiate a drag.
 
-The default class name is `zoomist-not-draggable`:
+The default class name is `zoomist-not-draggable` (pass the class name without the leading dot):
 
 ```html
 <div class="zoomist-image">
@@ -85,7 +85,7 @@ The default class name is `zoomist-not-draggable`:
 </div>
 ```
 
-You can change the class name via the `disableDraggingClass` option:
+You can change the class name via the `disableDraggingClass` option (pass the name without the leading dot — Zoomist adds the dot internally when checking ancestry):
 
 ```js
 const zoomist = new Zoomist('.zoomist-container', {

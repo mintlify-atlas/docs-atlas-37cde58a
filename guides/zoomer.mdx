@@ -25,11 +25,31 @@ When `zoomer: true` is set, Zoomist appends the following markup inside `.zoomis
 
 ```html
 <div class="zoomist-zoomer">
-  <button class="zoomist-zoomer-in">+</button>
-  <button class="zoomist-zoomer-out">-</button>
-  <button class="zoomist-zoomer-reset">↺</button>
+  <button
+    class="zoomist-zoomer-in zoomist-zoomer-button"
+    type="button"
+    role="button"
+    aria-label="button for zoom in zoomist"
+    aria-disabled="false"
+  ><!-- inline SVG icon --></button>
+  <button
+    class="zoomist-zoomer-out zoomist-zoomer-button"
+    type="button"
+    role="button"
+    aria-label="button for zoom out zoomist"
+    aria-disabled="false"
+  ><!-- inline SVG icon --></button>
+  <button
+    class="zoomist-zoomer-reset zoomist-zoomer-button"
+    type="button"
+    role="button"
+    aria-label="button for reset zoomist scale"
+    aria-disabled="false"
+  ><!-- inline SVG icon --></button>
 </div>
 ```
+
+Each button contains an inline SVG icon (plus, minus, and reset arrow respectively). The `type="button"` attribute prevents accidental form submission.
 
 | Class | Purpose |
 | ----- | ------- |
@@ -37,6 +57,7 @@ When `zoomer: true` is set, Zoomist appends the following markup inside `.zoomis
 | `zoomist-zoomer-in` | Zoom in button |
 | `zoomist-zoomer-out` | Zoom out button |
 | `zoomist-zoomer-reset` | Reset to initial scale button |
+| `zoomist-zoomer-button` | Applied to all three buttons |
 
 ## Configuration options
 

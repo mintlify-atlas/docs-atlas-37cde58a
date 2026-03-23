@@ -24,9 +24,17 @@ const zoomist = new Zoomist('.zoomist-container', {
 When `slider: true` is set, Zoomist appends the following markup inside `.zoomist-container`:
 
 ```html
-<div class="zoomist-slider">
-  <div class="zoomist-slider-track">
-    <div class="zoomist-slider-button"></div>
+<div class="zoomist-slider zoomist-slider-horizontal">
+  <div class="zoomist-slider-wrapper">
+    <span class="zoomist-slider-bar"></span>
+    <span
+      class="zoomist-slider-button"
+      role="slider"
+      aria-orientation="horizontal"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    ></span>
   </div>
 </div>
 ```
@@ -114,12 +122,20 @@ Override the default slider styles by targeting the generated classes:
   padding: 8px 0;
 }
 
-/* Track (the bar) */
-.zoomist-slider-track {
+/* Track wrapper (the bar container) */
+.zoomist-slider-wrapper {
   height: 4px;
   background: #e0e0e0;
   border-radius: 2px;
   position: relative;
+}
+
+/* Filled bar */
+.zoomist-slider-bar {
+  display: block;
+  height: 100%;
+  background: #333;
+  border-radius: 2px;
 }
 
 /* Draggable thumb */

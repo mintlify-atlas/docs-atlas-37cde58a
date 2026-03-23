@@ -53,12 +53,12 @@ const zoomist = new Zoomist('.zoomist-container', {
   When `true`, wheel events are released when the image reaches `minScale` or `maxScale`, allowing the page to continue scrolling. Useful when the Zoomist container is inside a scrollable page.
 </ParamField>
 
-<ParamField path="disableDraggingClass" type="string" default="'.zoomist-not-draggable'">
-  A CSS selector string. Elements inside the container that match this selector will not trigger drag-to-pan. Useful for interactive elements (buttons, inputs) inside the zoomable area.
+<ParamField path="disableDraggingClass" type="string" default="'zoomist-not-draggable'">
+  A class name (without the leading dot). Elements inside the container that have this class will not trigger drag-to-pan. Zoomist internally calls `element.closest('.className')` to check ancestry. Useful for interactive elements (buttons, inputs) inside the zoomable area.
 </ParamField>
 
-<ParamField path="disableWheelingClass" type="string" default="'.zoomist-not-wheelable'">
-  A CSS selector string. Elements inside the container that match this selector will not trigger mouse wheel zoom.
+<ParamField path="disableWheelingClass" type="string" default="'zoomist-not-wheelable'">
+  A class name (without the leading dot). Elements inside the container that have this class will not trigger mouse wheel zoom.
 </ParamField>
 
 <ParamField path="smooth" type="boolean | SmoothOptions" default="false">
@@ -153,8 +153,8 @@ const options: ZoomistOptions = {
   wheelReleaseOnMinMax: false,
 
   // per-element opt-outs
-  disableDraggingClass: '.zoomist-not-draggable',
-  disableWheelingClass: '.zoomist-not-wheelable',
+  disableDraggingClass: 'zoomist-not-draggable',
+  disableWheelingClass: 'zoomist-not-wheelable',
 
   // smooth drag animation
   smooth: false,

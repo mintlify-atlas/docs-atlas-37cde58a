@@ -40,12 +40,15 @@ The Slider module renders a draggable track that maps the current zoom level to 
 
     ```html
     <div class="zoomist-slider zoomist-slider-horizontal">
-      <div class="zoomist-slider-track">
+      <div class="zoomist-slider-wrapper">
         <span class="zoomist-slider-bar"></span>
         <span
           class="zoomist-slider-button"
           role="slider"
           aria-orientation="horizontal"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
         ></span>
       </div>
     </div>
@@ -124,9 +127,24 @@ The Zoomer module renders zoom-in, zoom-out, and reset buttons. Each button disp
 
     ```html
     <div class="zoomist-zoomer">
-      <button class="zoomist-zoomer-in zoomist-zoomer-button" aria-label="Zoom in">…</button>
-      <button class="zoomist-zoomer-out zoomist-zoomer-button" aria-label="Zoom out">…</button>
-      <button class="zoomist-zoomer-reset zoomist-zoomer-button" aria-label="Reset">…</button>
+      <button
+        class="zoomist-zoomer-in zoomist-zoomer-button"
+        type="button"
+        aria-label="button for zoom in zoomist"
+        aria-disabled="false"
+      ><!-- SVG --></button>
+      <button
+        class="zoomist-zoomer-out zoomist-zoomer-button"
+        type="button"
+        aria-label="button for zoom out zoomist"
+        aria-disabled="false"
+      ><!-- SVG --></button>
+      <button
+        class="zoomist-zoomer-reset zoomist-zoomer-button"
+        type="button"
+        aria-label="button for reset zoomist scale"
+        aria-disabled="false"
+      ><!-- SVG --></button>
     </div>
     ```
 
